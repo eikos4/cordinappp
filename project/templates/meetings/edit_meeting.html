@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block title %}Listado de Reuniones{% endblock %}
+{% block content %}
+
+
+
+<h2 class="mb-4 d-flex align-items-center">
+  <i class="bi bi-pencil-square text-primary me-2"></i> Edición de Meeting
+</h2>
+
+
+{% if users %}
+<form method="POST" class="needs-validation" novalidate>
+    {{ form.hidden_tag() }}
+
+    <!-- Campo Título -->
+    <div class="mb-4">
+        {{ form.title.label(class="form-label fw-bold") }}
+        {{ form.title(class="form-control", placeholder="Modifica el título de la reunión") }}
+        <div class="invalid-feedback">Por favor, ingresa un título válido.</div>
+    </div>
+
+    <!-- Campo Fecha y Hora -->
+    <div class="mb-4">
+        {{ form.date.label(class="form-label fw-bold") }}
+        {{ form.date(class="form-control") }}
+        <div class="invalid-feedback">Por favor, selecciona una fecha válida.</div>
+    </div>
+
+    <!-- Campo Responsable -->
+    <div class="mb-4">
+        {{ form.created_by_id.label(class="form-label fw-bold") }}
+        {{ form.created_by_id(class="form-select") }}
+        <div class="invalid-feedback">Por favor, selecciona un responsable.</div>
+    </div>
+
+    <!-- Campo Agenda -->
+    <div class="mb-4">
+        {{ form.agenda.label(class="form-label fw-bold") }}
+        {{ form.agenda(class="form-control", placeholder="Actualiza los puntos de la agenda") }}
+    </div>
+
+    <!-- Campo Participantes -->
+    <div class="mb-4">
+        <label class="form-label fw-bold">Participantes</label>
+        <div class="row" style="max-height: 200px; overflow-y: auto;">
+            {% for user in users %}
+            <div class="col-md-6">
+                <div class="form-check">
+                    <input 
+                        class="form-check-input" 
+                        type="checkbox" 
+                        id="participant-{{ user.id }}" 
+                        name="participants" 
+                        value="{{ user.id }}" 
+                        {% if user.id|string in selected_participants %}checked{% endif %}>
+                    <label class="form-check-label" for="participant-{{ user.id }}">
+                        {{ user.username }}
+                    </label>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <small class="text-muted">Selecciona los usuarios que participarán en esta reunión.</small>
+    </div>
+
+    <!-- Botones de Acción -->
+    <div class="d-flex justify-content-between">
+        <a href="{{ url_for('meetings.list_meetings') }}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Cancelar
+        </a>
+        {{ form.submit(class="btn btn-primary", value="Guardar Cambios") }}
+    </div>
+</form>
+{% else %}
+<!-- Mensaje de Advertencia -->
+<div class="alert alert-warning text-center mt-4">
+    No hay usuarios disponibles para asignar a esta reunión. Por favor, crea usuarios primero.
+</div>
+{% endif %}
+
+{% endblock %}

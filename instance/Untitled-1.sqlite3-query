@@ -1,0 +1,8 @@
+-- database: ./atnote.db
+
+SELECT * FROM meeting_participants;
+
+DELETE FROM meeting_participants WHERE meeting_id NOT IN (SELECT id FROM meetings);
+
+
+SELECT * FROM meeting_participants WHERE meeting_id NOT IN (SELECT id FROM meetings);

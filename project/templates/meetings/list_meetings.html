@@ -1,0 +1,188 @@
+{% extends "base.html" %}
+{% block title %}Listado de Reuniones{% endblock %}
+{% block content %}
+
+<div class="container py-4">
+  <div class="container py-4">
+
+    <!-- Encabezado Principal con Total de Reuniones y Reloj -->
+    <div class="row align-items-center mb-4">
+      <div class="col-md-6">
+        <h2 class="text-primary mb-0"><i class="bi bi-calendar3"></i> Historial de Reuniones</h2>
+      </div>
+      <div class="col-md-3">
+        <div class="card bg-primary text-white text-center">
+          <div class="card-body p-2">
+            <h6>Total Reuniones</h6>
+            <h4 class="mb-0">{{ meetings|length }}</h4>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3 text-end">
+        <h5 id="clock" class="text-muted mb-0"></h5>
+      </div>
+    </div>
+  
+    <!-- Botones de Acción -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <div>
+        <a href="{{ url_for('meetings.new_meeting') }}" class="btn btn-primary">
+          <i class="bi bi-plus-circle"></i> Nueva Reunión
+        </a>
+        <a href="{{ url_for('meetings.export_meetings') }}" class="btn btn-success">
+          <i class="bi bi-file-earmark-arrow-down"></i> Exportar
+        </a>
+      </div>
+      <!-- Campo de Búsqueda -->
+      <div class="input-group w-50">
+        <span class="input-group-text"><i class="bi bi-search"></i></span>
+        <input type="text" id="search" class="form-control" placeholder="Buscar reuniones por título, fecha, agenda o creador...">
+      </div>
+    </div>
+
+  <!-- Tabla de Reuniones -->
+  <div class="table-responsive">
+    <table class="table table-hover table-bordered" id="meetings-table">
+      <thead class="table-primary">
+        <tr>
+          <th>Título</th>
+          <th>Fecha</th>
+          <th>Creador</th>
+          <th>Agenda</th>
+          <th>Participantes</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for m in meetings %}
+        <tr>
+          <td>{{ m.title }}</td>
+          <td>{{ m.date.strftime('%Y-%m-%d %H:%M') }}</td>
+          <td>{{ m.creator.username if m.creator else "N/A" }}</td>
+          <td>{{ m.agenda if m.agenda else "Sin agenda" }}</td>
+          <td>
+            {% if m.participants %}
+              {% for participant in m.participants %}
+                <span class="badge bg-info text-dark">{{ participant.username }}</span>
+              {% endfor %}
+            {% else %}
+              <span class="text-muted">Sin participantes</span>
+            {% endif %}
+          </td>
+          <td>
+            <div class="btn-group">
+              <a href="{{ url_for('meetings.edit_meeting', meeting_id=m.id) }}" class="btn btn-sm btn-warning">
+                <i class="bi bi-pencil-square"></i> Editar
+              </a>
+              <form action="{{ url_for('meetings.delete_meeting', meeting_id=m.id) }}" method="POST" style="display:inline;">
+                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('¿Estás seguro de eliminar esta reunión?')">
+                  <i class="bi bi-trash"></i> Borrar
+                </button>
+              </form>
+              <button type="button" class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#detailsModal-{{ m.id }}">
+                <i class="bi bi-eye"></i> Detalles
+              </button>
+            </div>
+          </td>
+        </tr>
+
+        <!-- Modal para Detalles -->
+        <div class="modal fade" id="detailsModal-{{ m.id }}" tabindex="-1" aria-labelledby="detailsModalLabel-{{ m.id }}" aria-hidden="true">
+          <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="detailsModalLabel-{{ m.id }}">Detalles de la Reunión: {{ m.title }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+              </div>
+              <div class="modal-body">
+                <p><strong>Título:</strong> {{ m.title }}</p>
+                <p><strong>Fecha:</strong> {{ m.date.strftime('%Y-%m-%d %H:%M') }}</p>
+                <p><strong>Creador:</strong> {{ m.creator.username if m.creator else "N/A" }}</p>
+                <p><strong>Agenda:</strong> {{ m.agenda if m.agenda else "Sin agenda" }}</p>
+                <p><strong>Participantes:</strong></p>
+                <ul>
+                  {% if m.participants %}
+                    {% for participant in m.participants %}
+                      <li>{{ participant.username }}</li>
+                    {% endfor %}
+                  {% else %}
+                    <li>Sin participantes</li>
+                  {% endif %}
+                </ul>
+              
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% else %}
+        <tr>
+          <td colspan="6" class="text-center">No hay reuniones registradas.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Reloj Dinámico -->
+<div class="text-center mt-5">
+  <h1>Iniciar Minuta Semanal Atstatus</h1>
+  <h2 id="clock" class="mt-3 text-muted"></h2>
+  <a class="btn btn-secondary" href="{{ url_for('tasks.list_tasks') }}">INICIAR MINUTA</a>
+</div>
+
+<!-- Script para el Reloj -->
+<script>
+  function updateClock() {
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('es-ES', {
+      weekday: 'long', 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric'
+    });
+    const timeStr = now.toLocaleTimeString('es-ES');
+    document.getElementById("clock").textContent = dateStr + ' - ' + timeStr;
+  }
+  setInterval(updateClock, 1000);
+  updateClock();
+</script>
+
+<!-- Script para Filtros Dinámicos -->
+<script>
+  document.getElementById("filter-status").addEventListener("change", function() {
+    const status = this.value.toLowerCase();
+    const rows = document.querySelectorAll("#meetings-table tbody tr");
+
+    rows.forEach(row => {
+      const statusCell = row.querySelector("td:nth-child(2)").textContent.toLowerCase();
+      row.style.display = status === "" || statusCell.includes(status) ? "" : "none";
+    });
+  });
+
+  document.getElementById("filter-creator").addEventListener("change", function() {
+    const creator = this.value.toLowerCase();
+    const rows = document.querySelectorAll("#meetings-table tbody tr");
+
+    rows.forEach(row => {
+      const creatorCell = row.querySelector("td:nth-child(3)").textContent.toLowerCase();
+      row.style.display = creator === "" || creatorCell.includes(creator) ? "" : "none";
+    });
+  });
+
+  document.getElementById("search").addEventListener("input", function() {
+    const query = this.value.toLowerCase();
+    const rows = document.querySelectorAll("#meetings-table tbody tr");
+
+    rows.forEach(row => {
+      const cells = Array.from(row.querySelectorAll("td"));
+      const matches = cells.some(cell => cell.textContent.toLowerCase().includes(query));
+      row.style.display = matches ? "" : "none";
+    });
+  });
+</script>
+
+{% endblock %}

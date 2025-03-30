@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block title %}Nueva Reunión{% endblock %}
+{% block content %}
+<h2 class="mb-4">Crear Nueva Reunión</h2>
+
+<div class="card">
+  <div class="card-body">
+    {% if users %}
+    <form method="POST">
+      {{ form.hidden_tag() }}
+      
+      <!-- Título -->
+      <div class="mb-3">
+        {{ form.title.label(class="form-label") }}
+        {{ form.title(class="form-control", placeholder="Ingrese el título de la reunión") }}
+      </div>
+
+      <!-- Fecha y Hora -->
+      <div class="mb-3">
+        {{ form.date.label(class="form-label") }}
+        {{ form.date(class="form-control") }}
+      </div>
+
+      <!-- Responsable -->
+      <div class="mb-3">
+        {{ form.created_by_id.label(class="form-label") }}
+        {{ form.created_by_id(class="form-select") }}
+      </div>
+
+      <!-- Agenda -->
+      <div class="mb-3">
+        {{ form.agenda.label(class="form-label") }}
+        {{ form.agenda(class="form-control", placeholder="Ingrese los puntos de la agenda") }}
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Participantes (Opcional)</label>
+        <div class="row" style="max-height: 200px; overflow-y: auto;">
+          {% for user in users %}
+          <div class="col-md-4">
+            <div class="form-check">
+              <input 
+                class="form-check-input" 
+                type="checkbox" 
+                id="participant-{{ user.id }}" 
+                name="participants" 
+                value="{{ user.id }}" 
+                {% if user.id|string in selected_participants %}checked{% endif %}
+              >
+              <label class="form-check-label" for="participant-{{ user.id }}">
+                {{ user.username }}
+              </label>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      
+
+      <!-- Botones de Acción -->
+      <div class="d-flex justify-content-between">
+        <a href="{{ url_for('meetings.list_meetings') }}" class="btn btn-secondary">Cancelar</a>
+        {{ form.submit(class="btn btn-primary", value="Crear Reunión") }}
+      </div>
+    </form>
+    {% else %}
+    <div class="alert alert-warning">No hay usuarios disponibles para asignar a esta reunión. Por favor, crea usuarios primero.</div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Indicador de Progreso (opcional) -->
+<div id="loading" class="text-center mt-3" style="display: none;">
+  <div class="spinner-border text-primary" role="status">
+    <span class="visually-hidden">Cargando...</span>
+  </div>
+</div>
+
+<script>
+  // Mostrar un indicador de carga cuando se envía el formulario
+  const form = document.querySelector('form');
+  if (form) {
+    form.addEventListener('submit', () => {
+      document.getElementById('loading').style.display = 'block';
+    });
+  }
+</script>
+
+{% endblock %}
