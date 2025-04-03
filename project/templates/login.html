@@ -7,12 +7,12 @@
 {% block content %}
 <div class="login-container">
   <div class="login-box">
-    <h2 class="text-center text-white fade-in">atCORP</h2>
+    <h2 class="text-center text-white fade-in">AtSTATUS</h2>
     <div class="text-center mt-4">
       <img src="{{ url_for('static', filename='img/logof.gif') }}" alt="Imagen de Bienvenida" class="img-fluid" style="max-width: 100%; border-radius: 100px;">
     </div>
 
-    <h4 class="text-center text-white fade-in-delay">GESTIÓN DE PROYECTOS CUSTOMER N2</h4>
+    <h4 class="text-center text-white fade-in-delay">GESTIÓN DE TAREAS ATENTUS LATAM</h4>
     <form method="POST" action="{{ url_for('main.login') }}" class="slide-in">
       {{ form.hidden_tag() }}
       

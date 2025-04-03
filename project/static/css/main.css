@@ -1,396 +1,257 @@
-/* Fondo del Login */
+/* ----------------------------------------------
+   VARIABLES DE COLOR
+---------------------------------------------- */
+:root {
+  --color-gray: #f2f2f2;
+  --color-purple: #5c02a2;
+  --color-dark-blue: #0b1738;
+  --color-orange: #f1680d;
+}
+
+/* ----------------------------------------------
+   ESTILOS GENERALES
+---------------------------------------------- */
+body {
+  background: url("../img/bg-textura.png") no-repeat center center fixed;
+  background-size: cover;
+  color: #ffffff;
+}
+
+
+
+body.dark-mode {
+  background-color: #121212;
+  color: #ffffff;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--color-dark-blue);
+}
+
+.text-muted {
+  color: var(--color-gray);
+}
+
+/* ----------------------------------------------
+   LOGIN: CONTENEDOR Y CAJA
+---------------------------------------------- */
 .login-container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: linear-gradient(
-        rgba(0, 0, 0, 0.5),
-        rgba(0, 0, 0, 0.5)
-      ), url("../img/3.gif") no-repeat center center fixed;
-    background-size: cover;
-    z-index: -1;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(
+      rgba(0, 0, 0, 0.5),
+      rgba(0, 0, 0, 0.5)
+    ),
+    url("../img/fondo.png") no-repeat center center fixed;
+  background-size: cover;
+  overflow: hidden;
+  z-index: -1;
 }
 
-  
-  /* Caja del Login */
-  .login-box {
-    background-color: rgba(0, 0, 0, 0.7); /* Fondo semitransparente */
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-    width: 100%;
-    max-width: 400px;
-  }
-
-  body.dark-mode {
-    background-color: #121212;
-    color: #ffffff;
-}
-
-/* Fondo del Login */
-
-
-
-.login-container {
-    position: relative;
-    width: 100%;
-    height: 100vh; /* Ocupa toda la altura de la ventana */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: url() no-repeat center center fixed;
-  /* Evita que haya scroll si el contenido se sale del viewport */
-}
-
-
-/* Fondo del Login (GIF Full Screen) */
-.login-container {
-    position: fixed; /* Fija el contenedor al viewport */
-    top: 0;
-    left: 0;
-    width: 100%; /* Ocupa todo el ancho */
-    height: 100vh; /* Ocupa todo el alto del viewport */
-    display: flex; /* Para centrar el contenido */
-    justify-content: center;
-    align-items: center;
-    background: url("../img/fondo.png") no-repeat center center fixed;
-    background-size: cover; /* Cubre toda la pantalla sin distorsionar */
-    overflow: hidden; /* Evita scroll adicional */
-    z-index: -1; /* Envía el fondo detrás del contenido */
-}
-
-/* Caja del Login */
 .login-box {
-    position: relative;
-    background-color: rgba(0, 0, 0, 0.8); /* Fondo semitransparente */
-    padding: 30px;
-    border-radius: 15px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
-    z-index: 1; /* Asegura que el formulario esté encima del fondo */
+  position: relative;
+  background-color: rgba(0, 0, 0, 0.8);
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+  z-index: 1;
+  width: 100%;
+  max-width: 400px;
 }
 
-
-
-
-
-
-
-/* Transiciones y animaciones (opcional) */
+/* ----------------------------------------------
+   ANIMACIONES DE ENTRADA
+---------------------------------------------- */
 h2.fade-in, h4.fade-in-delay {
-    opacity: 0;
-    animation: fade-in 1.2s forwards;
+  opacity: 0;
+  animation: fade-in 1.2s forwards;
 }
 h4.fade-in-delay {
-    animation-delay: 0.5s;
+  animation-delay: 0.5s;
 }
 
 form.slide-in {
-    transform: translateY(30px);
-    opacity: 0;
-    animation: slide-in 0.8s forwards;
-    animation-delay: 1s;
+  transform: translateY(30px);
+  opacity: 0;
+  animation: slide-in 0.8s forwards;
+  animation-delay: 1s;
 }
 
-/* Animaciones */
-@keyframes pop-up {
-    from {
-        transform: scale(0.9);
-        opacity: 0;
-    }
-    to {
-        transform: scale(1);
-        opacity: 1;
-    }
-}
-
+/* ----------------------------------------------
+   DEFINICIÓN DE ANIMACIONES
+---------------------------------------------- */
 @keyframes fade-in {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
 @keyframes slide-in {
-    from {
-        transform: translateY(30px);
-        opacity: 0;
-    }
-    to {
-        transform: translateY(0);
-        opacity: 1;
-    }
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
-/* Transición suave en los campos */
+/* ----------------------------------------------
+   BOTONES Y CAMPOS
+---------------------------------------------- */
 .form-control, .btn-primary {
-    transition: all 0.3s ease-in-out;
+  transition: all 0.3s ease-in-out;
 }
 
 .form-control:hover, .btn-primary:hover {
-    transform: scale(1.05);
+  transform: scale(1.05);
 }
 
-/* Espaciado entre las columnas de participantes */
+.btn-primary {
+  background-color: var(--color-purple);
+  border-color: var(--color-purple);
+}
+
+.btn-secondary {
+  background-color: var(--color-dark-blue);
+  border-color: var(--color-dark-blue);
+}
+
+.btn-warning {
+  background-color: var(--color-orange);
+  border-color: var(--color-orange);
+  color: var(--color-dark-blue);
+}
+
 .form-check {
-    margin-bottom: 10px;
-  }
-  
+  margin-bottom: 10px;
+}
+
+/* ----------------------------------------------
+   TABLAS
+---------------------------------------------- */
+.table thead {
+  background-color: var(--color-dark-blue);
+  color: #ffffff;
+}
+
+.table tbody tr {
+  background-color: var(--color-gray);
+  color: var(--color-dark-blue);
+}
+
+.table tbody tr:hover {
+  background-color: var(--color-purple);
+  color: #ffffff;
+}
+
+/* ----------------------------------------------
+   TIMELINE
+---------------------------------------------- */
+.timeline-container {
+  width: 100%;
+  overflow-x: auto;
+  padding-bottom: 15px;
+  margin: 20px auto;
+  white-space: nowrap;
+}
+
+.timeline {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.timeline-header {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 2px solid #007bff;
+  padding-bottom: 10px;
+  white-space: nowrap;
+}
+
+.timeline-day {
+  flex: 1;
+  min-width: 40px;
+  text-align: center;
+  font-size: 14px;
+  color: #333;
+  padding: 0 10px;
+  border-left: 1px solid #ddd;
+}
+
+.timeline-tasks {
+  position: relative;
+  height: 100px;
+  margin-top: 10px;
+}
+
+.timeline-task {
+  position: absolute;
+  height: 40px;
+  line-height: 40px;
+  text-align: center;
+  border-radius: 5px;
+  color: #fff;
+  font-size: 12px;
+  padding: 0 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transform: translateY(0);
+}
+
+.timeline-task.pendiente {
+  background-color: #ffc107;
+}
+
+.timeline-task.en-curso {
+  background-color: #17a2b8;
+}
+
+.timeline-task.finalizada {
+  background-color: #28a745;
+}
+
+.task-tooltip {
+  position: absolute;
+  background-color: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  padding: 5px 10px;
+  font-size: 12px;
+  border-radius: 3px;
+  pointer-events: none;
+  z-index: 1000;
+}
+
+/* ----------------------------------------------
+   CARDS
+---------------------------------------------- */
+.card:hover {
+  transform: scale(1.05);
+  transition: transform 0.2s ease-in-out;
+}
+
+.card img {
+  border: 2px solid #007bff;
+}
 
 
 
-  :root {
-    --color-gray: #f2f2f2;
-    --color-purple: #5c02a2;
-    --color-dark-blue: #0b1738;
-    --color-orange: #f1680d;
-  }
-  
+.logo-text {
+  filter: hue-rotate(180deg); /* cambia color del texto */
+  opacity: 0.9;
+}
 
-  h1, h2, h3, h4, h5, h6 {
-    color: var(--color-dark-blue); /* Azul oscuro */
-  }
-  
-  .text-muted {
-    color: var(--color-gray); /* Gris */
-  }
-  
-
-
-  .btn-primary {
-    background-color: var(--color-purple); /* Morado */
-    border-color: var(--color-purple);
-  }
-  
-  .btn-secondary {
-    background-color: var(--color-dark-blue); /* Azul oscuro */
-    border-color: var(--color-dark-blue);
-  }
-  
-  .btn-warning {
-    background-color: var(--color-orange); /* Naranjo */
-    border-color: var(--color-orange);
-    color: var(--color-dark-blue); /* Texto azul oscuro para contraste */
-  }
-
- 
-  .table thead {
-    background-color: var(--color-dark-blue); /* Azul oscuro */
-    color: #ffffff; /* Blanco */
-  }
-  
-  .table tbody tr {
-    background-color: var(--color-gray); /* Gris */
-    color: var(--color-dark-blue);
-  }
-  
-  .table tbody tr:hover {
-    background-color: var(--color-purple); /* Morado */
-    color: #ffffff; /* Blanco */
-  }
-  
-
-  body {
-    background-color: var(--color-gray); /* Gris */
-    color: var(--color-dark-blue); /* Azul oscuro para texto */
-  }
-  
-
-
-  .timeline {
-    border-left: 2px solid #007bff;
-    margin: 20px 0;
-    padding: 10px 0;
-  }
-  .timeline-item {
-    margin-bottom: 20px;
-    position: relative;
-    padding-left: 20px;
-  }
-  .timeline-item::before {
-    content: '';
-    position: absolute;
-    width: 10px;
-    height: 10px;
-    background-color: #007bff;
-    border-radius: 50%;
-    left: -6px;
-    top: 5px;
-  }
-  .timeline-title {
-    font-weight: bold;
-    color: #007bff;
-  }
-
-
-  .card:hover {
-    transform: scale(1.05);
-    transition: transform 0.2s ease-in-out;
-  }
-  .card img {
-    border: 2px solid #007bff;
-  }
-  
-  
-
-
-
-  .timeline-container {
-    width: 100%;
-    margin: 20px auto;
-    overflow-x: auto;
-  }
-  
-  .timeline {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    padding: 10px;
-  }
-  
-  .timeline-header {
-    display: flex;
-    justify-content: space-between;
-    position: relative;
-    border-bottom: 2px solid #007bff;
-    padding-bottom: 5px;
-  }
-  
-  .timeline-day {
-    flex: 1;
-    text-align: center;
-    font-size: 12px;
-    color: #333;
-  }
-  
-  .timeline-tasks {
-    position: relative;
-    height: 100px;
-    margin-top: 10px;
-  }
-  
-  .timeline-task {
-    position: absolute;
-    top: 20px;
-    height: 30px;
-    line-height: 30px;
-    text-align: center;
-    border-radius: 5px;
-    color: #fff;
-    font-size: 12px;
-    padding: 0 10px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  
-  .timeline-task.pendiente {
-    background-color: #ffc107;
-  }
-  
-  .timeline-task.en-curso {
-    background-color: #17a2b8;
-  }
-  
-  .timeline-task.finalizada {
-    background-color: #28a745;
-  }
-  
-
-  .task-tooltip {
-    position: absolute;
-    background-color: rgba(0, 0, 0, 0.8);
-    color: #fff;
-    padding: 5px 10px;
-    font-size: 12px;
-    border-radius: 3px;
-    pointer-events: none;
-    z-index: 1000;
-  }
-  .timeline-container {
-    width: 100%;
-    overflow-x: scroll; /* Agregar scroll horizontal */
-    padding-bottom: 15px; /* Espacio para el scroll */
-  }
-  
-  .timeline-day {
-    min-width: 40px; /* Asegura que cada día tenga un ancho mínimo */
-  }
-  
-
-  .timeline-container {
-    width: 100%;
-    overflow-x: auto; /* Permitir scroll horizontal */
-    margin: 20px auto;
-    white-space: nowrap; /* Asegurar que los elementos no se envuelvan */
-  }
-  
-  .timeline {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-  }
-  
-  .timeline-header {
-    display: flex;
-    position: relative;
-    justify-content: space-between;
-    border-bottom: 2px solid #007bff;
-    padding-bottom: 10px;
-    white-space: nowrap;
-  }
-  
-  .timeline-day {
-    flex: 1;
-    text-align: center;
-    font-size: 14px;
-    color: #333;
-    padding: 0 10px;
-    border-left: 1px solid #ddd;
-    position: relative;
-  }
-  
-  .timeline-tasks {
-    position: relative;
-    height: 100px;
-    margin-top: 10px;
-  }
-  
-  .timeline-task {
-    position: absolute;
-    height: 40px;
-    line-height: 40px;
-    text-align: center;
-    border-radius: 5px;
-    color: #fff;
-    font-size: 12px;
-    padding: 0 10px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    transform: translateY(0);
-  }
-  
-  .timeline-task.pendiente {
-    background-color: #ffc107;
-  }
-  
-  .timeline-task.en-curso {
-    background-color: #17a2b8;
-  }
-  
-  .timeline-task.finalizada {
-    background-color: #28a745;
-  }
-  
+.logo-icon {
+  margin-right: 10px;
+}

@@ -1,0 +1,246 @@
+/* ----------------------------------------------
+   VARIABLES DE COLOR
+---------------------------------------------- */
+:root {
+  --color-gray: #f2f2f2;
+  --color-purple: #5c02a2;
+  --color-dark-blue: #0b1738;
+  --color-orange: #f1680d;
+}
+
+/* ----------------------------------------------
+   ESTILOS GENERALES
+---------------------------------------------- */
+body {
+  background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
+              url("../img/fondo.") no-repeat center center fixed;
+  background-size: cover;
+  color: #ffffff;
+}
+
+
+body.dark-mode {
+  background-color: #121212;
+  color: #ffffff;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--color-dark-blue);
+}
+
+.text-muted {
+  color: var(--color-gray);
+}
+
+/* ----------------------------------------------
+   LOGIN: CONTENEDOR Y CAJA
+---------------------------------------------- */
+.login-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(
+      rgba(0, 0, 0, 0.5),
+      rgba(0, 0, 0, 0.5)
+    ),
+    url("../img/fondo.png") no-repeat center center fixed;
+  background-size: cover;
+  overflow: hidden;
+  z-index: -1;
+}
+
+.login-box {
+  position: relative;
+  background-color: rgba(0, 0, 0, 0.8);
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+  z-index: 1;
+  width: 100%;
+  max-width: 400px;
+}
+
+/* ----------------------------------------------
+   ANIMACIONES DE ENTRADA
+---------------------------------------------- */
+h2.fade-in, h4.fade-in-delay {
+  opacity: 0;
+  animation: fade-in 1.2s forwards;
+}
+h4.fade-in-delay {
+  animation-delay: 0.5s;
+}
+
+form.slide-in {
+  transform: translateY(30px);
+  opacity: 0;
+  animation: slide-in 0.8s forwards;
+  animation-delay: 1s;
+}
+
+/* ----------------------------------------------
+   DEFINICIÓN DE ANIMACIONES
+---------------------------------------------- */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes slide-in {
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* ----------------------------------------------
+   BOTONES Y CAMPOS
+---------------------------------------------- */
+.form-control, .btn-primary {
+  transition: all 0.3s ease-in-out;
+}
+
+.form-control:hover, .btn-primary:hover {
+  transform: scale(1.05);
+}
+
+.btn-primary {
+  background-color: var(--color-purple);
+  border-color: var(--color-purple);
+}
+
+.btn-secondary {
+  background-color: var(--color-dark-blue);
+  border-color: var(--color-dark-blue);
+}
+
+.btn-warning {
+  background-color: var(--color-orange);
+  border-color: var(--color-orange);
+  color: var(--color-dark-blue);
+}
+
+.form-check {
+  margin-bottom: 10px;
+}
+
+/* ----------------------------------------------
+   TABLAS
+---------------------------------------------- */
+.table thead {
+  background-color: var(--color-dark-blue);
+  color: #ffffff;
+}
+
+.table tbody tr {
+  background-color: var(--color-gray);
+  color: var(--color-dark-blue);
+}
+
+.table tbody tr:hover {
+  background-color: var(--color-purple);
+  color: #ffffff;
+}
+
+/* ----------------------------------------------
+   TIMELINE
+---------------------------------------------- */
+.timeline-container {
+  width: 100%;
+  overflow-x: auto;
+  padding-bottom: 15px;
+  margin: 20px auto;
+  white-space: nowrap;
+}
+
+.timeline {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.timeline-header {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 2px solid #007bff;
+  padding-bottom: 10px;
+  white-space: nowrap;
+}
+
+.timeline-day {
+  flex: 1;
+  min-width: 40px;
+  text-align: center;
+  font-size: 14px;
+  color: #333;
+  padding: 0 10px;
+  border-left: 1px solid #ddd;
+}
+
+.timeline-tasks {
+  position: relative;
+  height: 100px;
+  margin-top: 10px;
+}
+
+.timeline-task {
+  position: absolute;
+  height: 40px;
+  line-height: 40px;
+  text-align: center;
+  border-radius: 5px;
+  color: #fff;
+  font-size: 12px;
+  padding: 0 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transform: translateY(0);
+}
+
+.timeline-task.pendiente {
+  background-color: #ffc107;
+}
+
+.timeline-task.en-curso {
+  background-color: #17a2b8;
+}
+
+.timeline-task.finalizada {
+  background-color: #28a745;
+}
+
+.task-tooltip {
+  position: absolute;
+  background-color: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  padding: 5px 10px;
+  font-size: 12px;
+  border-radius: 3px;
+  pointer-events: none;
+  z-index: 1000;
+}
+
+/* ----------------------------------------------
+   CARDS
+---------------------------------------------- */
+.card:hover {
+  transform: scale(1.05);
+  transition: transform 0.2s ease-in-out;
+}
+
+.card img {
+  border: 2px solid #007bff;
+}

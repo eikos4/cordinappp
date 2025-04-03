@@ -48,18 +48,7 @@
         <strong>Inicio:</strong> {{ task.start_date.strftime('%Y-%m-%d') if task.start_date else 'N/A' }}<br>
         <strong>Fin:</strong> {{ task.end_date.strftime('%Y-%m-%d') if task.end_date else 'N/A' }}
       </p>
-      <div class="timeline-progress">
-        <div class="progress" style="height: 25px;">
-          <div 
-            class="progress-bar bg-success" 
-            role="progressbar" 
-
-            aria-valuenow="{{ task.progress }}" 
-            aria-valuemin="0" 
-            aria-valuemax="100">
-            {{ task.progress }}%
-          </div>
-        </div>
+     
       </div>
     </div>
     {% endfor %}
