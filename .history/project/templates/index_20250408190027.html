@@ -1,0 +1,220 @@
+{% extends "base.html" %}
+
+{% block title %}
+  Inicio - AtSTATUS
+{% endblock %}
+
+{% block content %}
+
+{% set meetings = meetings_pagination.items %}
+{% set tasks_all = tasks_pagination.items %}
+
+<div class="container">
+  <!-- Encabezado Principal -->
+  <div class="text-center">
+    <h1 class="mb-3">Bienvenido a AtSTATUS</h1>
+    <div class="text-center mt-4">
+      <img src="{{ url_for('static', filename='img/logo.gif') }}" alt="Imagen de Bienvenida" class="img-fluid" style="max-width: 100%; border-radius: 10px;">
+    </div>
+    <h2 id="clock" class="mt-3 text-muted"></h2>
+  </div>
+
+  <!-- Tabla de Reuniones -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="text-primary"><i class="bi bi-calendar3"></i> Historial de Reuniones de Coordinación</h1>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table table-hover table-bordered">
+      <thead class="table-primary">
+        <tr>
+          <th>Título</th>
+          <th>Fecha</th>
+          <th>Creador</th>
+          <th>Agenda</th>
+          <th>Participantes</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for m in meetings %}
+        <tr>
+          <td>{{ m.title }}</td>
+          <td>{{ m.date.strftime('%Y-%m-%d %H:%M') }}</td>
+          <td>{{ m.creator.username if m.creator else "N/A" }}</td>
+          <td>{{ m.agenda if m.agenda else "Sin agenda" }}</td>
+          <td>
+            {% if m.participants %}
+              {% for participant in m.participants %}
+                <span class="badge bg-info text-dark">{{ participant.username }}</span>
+              {% endfor %}
+            {% else %}
+              <span class="text-muted">Sin participantes</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="5" class="text-center">No hay reuniones registradas.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- PAGINACION REUNIONES -->
+  <nav aria-label="Paginación de Reuniones">
+    <ul class="pagination justify-content-center">
+      {% if meetings_pagination.has_prev %}
+        <li class="page-item">
+          <a class="page-link" href="{{ url_for('main.index', meetings_page=meetings_pagination.prev_num, tasks_page=tasks_pagination.page) }}">Anterior</a>
+        </li>
+      {% else %}
+        <li class="page-item disabled"><span class="page-link">Anterior</span></li>
+      {% endif %}
+
+      {% for page_num in meetings_pagination.iter_pages() %}
+        {% if page_num %}
+          <li class="page-item {% if page_num == meetings_pagination.page %}active{% endif %}">
+            <a class="page-link" href="{{ url_for('main.index', meetings_page=page_num, tasks_page=tasks_pagination.page) }}">{{ page_num }}</a>
+          </li>
+        {% else %}
+          <li class="page-item disabled"><span class="page-link">...</span></li>
+        {% endif %}
+      {% endfor %}
+
+      {% if meetings_pagination.has_next %}
+        <li class="page-item">
+          <a class="page-link" href="{{ url_for('main.index', meetings_page=meetings_pagination.next_num, tasks_page=tasks_pagination.page) }}">Siguiente</a>
+        </li>
+      {% else %}
+        <li class="page-item disabled"><span class="page-link">Siguiente</span></li>
+      {% endif %}
+    </ul>
+  </nav>
+
+  <!-- Tabla de Tareas -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="text-primary"><i class="bi bi-clipboard-data"></i> Listado de Tareas</h1>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table table-hover table-bordered">
+      <thead class="table-dark">
+        <tr>
+          <th>#</th>
+          <th>Título</th>
+          <th>Participantes</th>
+          <th>Estado</th>
+          <th>Progreso</th>
+          <th>Prioridad</th>
+          <th>Categoría</th>
+          <th>Fecha Inicio</th>
+          <th>Fecha Entrega</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for task in tasks_all %}
+        <tr>
+          <td>{{ task.id }}</td>
+          <td>{{ task.title }}</td>
+          <td>
+            {% if task.participants %}
+              <ul class="list-unstyled mb-0">
+                {% for participant in task.participants %}
+                <li>{{ participant.username }}</li>
+                {% endfor %}
+              </ul>
+            {% else %}
+              <span class="text-muted">Sin participantes</span>
+            {% endif %}
+          </td>
+          <td>
+            <span class="badge {% if task.status == 'Pendiente' %}bg-warning{% elif task.status == 'En curso' %}bg-info{% elif task.status == 'Finalizada' %}bg-success{% endif %}">
+              {{ task.status }}
+            </span>
+          </td>
+          <td>{{ task.progress }}%</td>
+          <td>
+            <span class="badge {% if task.priority == 'Alta' %}bg-danger{% elif task.priority == 'Media' %}bg-primary{% else %}bg-secondary{% endif %}">
+              {{ task.priority }}
+            </span>
+          </td>
+          <td>{{ task.category or "Sin categoría" }}</td>
+          <td>{{ task.start_date.strftime('%Y-%m-%d') if task.start_date else "N/A" }}</td>
+          <td>{{ task.due_date.strftime('%Y-%m-%d') if task.due_date else "N/A" }}</td>
+          <td>
+            <button class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#taskModal{{ task.id }}">
+              <i class="bi bi-eye"></i> Ver Detalles
+            </button>
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="10" class="text-center">No hay tareas registradas.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- PAGINACION TAREAS -->
+  <nav aria-label="Paginación de Tareas">
+    <ul class="pagination justify-content-center">
+      {% if tasks_pagination.has_prev %}
+        <li class="page-item">
+          <a class="page-link" href="{{ url_for('main.index', tasks_page=tasks_pagination.prev_num, meetings_page=meetings_pagination.page) }}">Anterior</a>
+        </li>
+      {% else %}
+        <li class="page-item disabled"><span class="page-link">Anterior</span></li>
+      {% endif %}
+
+      {% for page_num in tasks_pagination.iter_pages() %}
+        {% if page_num %}
+          <li class="page-item {% if page_num == tasks_pagination.page %}active{% endif %}">
+            <a class="page-link" href="{{ url_for('main.index', tasks_page=page_num, meetings_page=meetings_pagination.page) }}">{{ page_num }}</a>
+          </li>
+        {% else %}
+          <li class="page-item disabled"><span class="page-link">...</span></li>
+        {% endif %}
+      {% endfor %}
+
+      {% if tasks_pagination.has_next %}
+        <li class="page-item">
+          <a class="page-link" href="{{ url_for('main.index', tasks_page=tasks_pagination.next_num, meetings_page=meetings_pagination.page) }}">Siguiente</a>
+        </li>
+      {% else %}
+        <li class="page-item disabled"><span class="page-link">Siguiente</span></li>
+      {% endif %}
+    </ul>
+  </nav>
+
+  <!-- Acciones Rápidas -->
+  <div class="text-center mt-5">
+    <a class="btn btn-primary" href="{{ url_for('meetings.new_meeting') }}">Tomar Minuta Semanal</a>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+<!-- Script para el Reloj -->
+<script>
+  function updateClock() {
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('es-ES', {
+      weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+    });
+    const timeStr = now.toLocaleTimeString('es-ES');
+    document.getElementById("clock").textContent = dateStr + ' - ' + timeStr;
+  }
+  setInterval(updateClock, 1000);
+  updateClock();
+</script>
+
+{% endblock %}

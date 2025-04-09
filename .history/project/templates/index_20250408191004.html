@@ -1,0 +1,206 @@
+{% extends "base.html" %}
+
+{% block title %}
+  Inicio - AtSTATUS
+{% endblock %}
+
+{% block content %}
+
+{% set meetings = meetings_pagination.items %}
+{% set tasks_all = tasks_pagination.items %}
+
+<div class="container">
+  <!-- Encabezado Principal -->
+  <div class="text-center">
+    <h1 class="mb-3">Bienvenido a AtSTATUS</h1>
+    <div class="text-center mt-4">
+      <img src="{{ url_for('static', filename='img/logo.gif') }}" alt="Imagen de Bienvenida" class="img-fluid" style="max-width: 100%; border-radius: 10px;">
+    </div>
+    <h2 id="clock" class="mt-3 text-muted"></h2>
+  </div>
+
+  <!-- Tabla de Reuniones -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="text-primary"><i class="bi bi-calendar3"></i> Historial de Reuniones de Coordinación</h1>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table table-hover table-bordered">
+      <thead class="table-primary">
+        <tr>
+          <th>Título</th>
+          <th>Fecha</th>
+          <th>Creador</th>
+          <th>Agenda</th>
+          <th>Participantes</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for m in meetings %}
+        <tr>
+          <td>{{ m.title }}</td>
+          <td>{{ m.date.strftime('%Y-%m-%d %H:%M') }}</td>
+          <td>{{ m.creator.username if m.creator else "N/A" }}</td>
+          <td>{{ m.agenda if m.agenda else "Sin agenda" }}</td>
+          <td>
+            {% if m.participants %}
+              {% for participant in m.participants %}
+                <span class="badge bg-info text-dark">{{ participant.username }}</span>
+              {% endfor %}
+            {% else %}
+              <span class="text-muted">Sin participantes</span>
+            {% endif %}
+          </td>
+          <td>
+            <button class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#meetingModal{{ m.id }}">
+              <i class="bi bi-eye"></i> Ver Detalles
+            </button>
+          </td>
+        </tr>
+
+        <!-- Modal Detalles de Reunión -->
+        <div class="modal fade" id="meetingModal{{ m.id }}" tabindex="-1" aria-labelledby="meetingModalLabel{{ m.id }}" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="meetingModalLabel{{ m.id }}">Detalles de Reunión</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+              </div>
+              <div class="modal-body">
+                <p><strong>Título:</strong> {{ m.title }}</p>
+                <p><strong>Fecha:</strong> {{ m.date.strftime('%Y-%m-%d %H:%M') }}</p>
+                <p><strong>Creador:</strong> {{ m.creator.username if m.creator else "N/A" }}</p>
+                <p><strong>Agenda:</strong> {{ m.agenda if m.agenda else "Sin agenda" }}</p>
+                <p><strong>Participantes:</strong></p>
+                <ul>
+                  {% for p in m.participants %}
+                    <li>{{ p.username }}</li>
+                  {% endfor %}
+                </ul>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Tabla de Tareas -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="text-primary"><i class="bi bi-clipboard-data"></i> Listado de Tareas</h1>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table table-hover table-bordered">
+      <thead class="table-dark">
+        <tr>
+          <th>#</th>
+          <th>Título</th>
+          <th>Participantes</th>
+          <th>Estado</th>
+          <th>Progreso</th>
+          <th>Prioridad</th>
+          <th>Categoría</th>
+          <th>Fecha Inicio</th>
+          <th>Fecha Entrega</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for task in tasks_all %}
+        <tr>
+          <td>{{ task.id }}</td>
+          <td>{{ task.title }}</td>
+          <td>
+            {% if task.participants %}
+              <ul class="list-unstyled mb-0">
+                {% for participant in task.participants %}
+                <li>{{ participant.username }}</li>
+                {% endfor %}
+              </ul>
+            {% else %}
+              <span class="text-muted">Sin participantes</span>
+            {% endif %}
+          </td>
+          <td>
+            <span class="badge {% if task.status == 'Pendiente' %}bg-warning{% elif task.status == 'En curso' %}bg-info{% elif task.status == 'Finalizada' %}bg-success{% endif %}">
+              {{ task.status }}
+            </span>
+          </td>
+          <td>{{ task.progress }}%</td>
+          <td>
+            <span class="badge {% if task.priority == 'Alta' %}bg-danger{% elif task.priority == 'Media' %}bg-primary{% else %}bg-secondary{% endif %}">
+              {{ task.priority }}
+            </span>
+          </td>
+          <td>{{ task.category or "Sin categoría" }}</td>
+          <td>{{ task.start_date.strftime('%Y-%m-%d') if task.start_date else "N/A" }}</td>
+          <td>{{ task.due_date.strftime('%Y-%m-%d') if task.due_date else "N/A" }}</td>
+          <td>
+            <button class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#taskModal{{ task.id }}">
+              <i class="bi bi-eye"></i> Ver Detalles
+            </button>
+          </td>
+        </tr>
+
+        <!-- Modal Detalles de Tarea -->
+        <div class="modal fade" id="taskModal{{ task.id }}" tabindex="-1" aria-labelledby="taskModalLabel{{ task.id }}" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="taskModalLabel{{ task.id }}">Detalles de Tarea</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+              </div>
+              <div class="modal-body">
+                <p><strong>Título:</strong> {{ task.title }}</p>
+                <p><strong>Descripción:</strong> {{ task.description or "Sin descripción" }}</p>
+                <p><strong>Estado:</strong> {{ task.status }}</p>
+                <p><strong>Progreso:</strong> {{ task.progress }}%</p>
+                <p><strong>Prioridad:</strong> {{ task.priority }}</p>
+                <p><strong>Categoría:</strong> {{ task.category or "Sin categoría" }}</p>
+                <p><strong>Fecha Inicio:</strong> {{ task.start_date.strftime('%Y-%m-%d') if task.start_date else "N/A" }}</p>
+                <p><strong>Fecha Entrega:</strong> {{ task.due_date.strftime('%Y-%m-%d') if task.due_date else "N/A" }}</p>
+                <p><strong>Participantes:</strong></p>
+                <ul>
+                  {% for p in task.participants %}
+                    <li>{{ p.username }}</li>
+                  {% endfor %}
+                </ul>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Acciones Rápidas -->
+  <div class="text-center mt-5">
+    <a class="btn btn-primary" href="{{ url_for('meetings.new_meeting') }}">Tomar Minuta Semanal</a>
+  </div>
+</div>
+
+<!-- Script para el Reloj -->
+<script>
+  function updateClock() {
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('es-ES', {
+      weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+    });
+    const timeStr = now.toLocaleTimeString('es-ES');
+    document.getElementById("clock").textContent = dateStr + ' - ' + timeStr;
+  }
+  setInterval(updateClock, 1000);
+  updateClock();
+</script>
+
+{% endblock %}

@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+{% block title %}Nueva Tarea{% endblock %}
+{% block content %}
+
+<div class="container mt-4">
+  <h2 class="text-center mb-4">
+    <i class="fas fa-tasks"></i> Asignar Nueva Tarea
+  </h2>
+
+  <div class="card shadow">
+    <div class="card-body">
+      <form method="POST" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
+        <!-- Título -->
+        <div class="mb-3">
+          <label class="form-label">
+            <i class="fas fa-heading"></i> {{ form.title.label.text }}
+          </label>
+          {{ form.title(class="form-control", placeholder="Ingresa el título de la tarea") }}
+        </div>
+
+        <!-- Descripción -->
+        <div class="mb-3">
+          <label class="form-label">
+            <i class="fas fa-align-left"></i> {{ form.description.label.text }}
+          </label>
+          {{ form.description(class="form-control", placeholder="Describe la tarea en detalle (opcional)", rows="3") }}
+        </div>
+
+        <!-- Progreso -->
+        <div class="mb-3">
+          <label class="form-label">
+            <i class="fas fa-chart-line"></i> {{ form.progress.label.text }}
+          </label>
+          {{ form.progress(class="form-control", placeholder="Porcentaje de avance (0-100)") }}
+        </div>
+
+        <!-- Estado -->
+        <div class="mb-3">
+          <label class="form-label">
+            <i class="fas fa-toggle-on"></i> {{ form.status.label.text }}
+          </label>
+          {{ form.status(class="form-select") }}
+        </div>
+
+        <!-- Prioridad -->
+        <div class="mb-3">
+          <label class="form-label">
+            <i class="fas fa-exclamation-circle"></i> {{ form.priority.label.text }}
+          </label>
+          {{ form.priority(class="form-select") }}
+        </div>
+
+        <!-- Categoría -->
+        <div class="mb-3">
+          <label class="form-label">
+            <i class="fas fa-folder-open"></i> {{ form.category.label.text }}
+          </label>
+          {{ form.category(class="form-select") }}
+        </div>
+
+        <!-- Asignado a -->
+        <div class="mb-3">
+          <label class="form-label">
+            <i class="fas fa-user"></i> {{ form.assigned_to.label.text }}
+          </label>
+          {{ form.assigned_to(class="form-select") }}
+          <small class="text-muted">Selecciona al usuario responsable de esta tarea.</small>
+        </div>
+
+        <!-- Fecha de Inicio -->
+        <div class="mb-3">
+          <label class="form-label">
+            <i class="fas fa-calendar-alt"></i> {{ form.start_date.label.text }}
+          </label>
+          {{ form.start_date(class="form-control") }}
+        </div>
+
+        <!-- Fecha de Finalización -->
+        <div class="mb-3">
+          <label class="form-label">
+            <i class="fas fa-calendar-check"></i> {{ form.end_date.label.text }}
+          </label>
+          {{ form.end_date(class="form-control") }}
+        </div>
+
+        <!-- Tiempo Estimado -->
+        <div class="mb-3">
+          <label class="form-label">
+            <i class="fas fa-hourglass-half"></i> {{ form.estimated_time.label.text }}
+          </label>
+          {{ form.estimated_time(class="form-control", placeholder="Tiempo estimado en horas (opcional)") }}
+        </div>
+
+        <!-- Dependencias -->
+        <div class="mb-3">
+          <label class="form-label">
+            <i class="fas fa-paperclip"></i> {{ form.attachments.label.text }}
+          </label>
+          {{ form.attachments(class="form-control") }}
+          <small class="text-muted">Sube un archivo relacionado con la tarea.</small>
+        </div>
+
+        <!-- Dependencias -->
+        <div class="mb-3">
+          <label class="form-label">
+            <i class="fas fa-link"></i> {{ form.dependent_task.label.text }}
+          </label>
+          {{ form.dependent_task(class="form-select") }}
+          <small class="text-muted">Selecciona una tarea de la que dependa esta. (opcional)</small>
+        </div>
+
+        <!-- Participantes -->
+        <div class="mb-3">
+          <label class="form-label">
+            <i class="fas fa-users"></i> Participantes (Opcional)
+          </label>
+          <div class="row">
+            {% for user in users %}
+              <div class="col-md-4">
+                <div class="form-check">
+                  <input 
+                    class="form-check-input" 
+                    type="checkbox" 
+                    id="participant-{{ user.id }}" 
+                    name="participants" 
+                    value="{{ user.id }}"
+                  >
+                  <label class="form-check-label" for="participant-{{ user.id }}">
+                    {{ user.username }}
+                  </label>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Comentarios -->
+        <div class="mb-3">
+          <label class="form-label">
+            <i class="fas fa-comments"></i> {{ form.comments.label.text }}
+          </label>
+          {{ form.comments(class="form-control", placeholder="Notas, URLS u objetivos vinculados para el desarrollo (opcional)") }}
+        </div>
+
+        <!-- Botones -->
+        <div class="d-flex justify-content-between">
+          <a href="{{ url_for('tasks.list_tasks') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Cancelar
+          </a>
+          {{ form.submit(class="btn btn-primary") }}
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

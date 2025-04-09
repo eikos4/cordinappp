@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+{% block title %}Listado de Tareas{% endblock %}
+{% block content %}
+
+<div class="container py-4">
+  <!-- Encabezado -->
+  <div class="row align-items-center mb-4">
+    <div class="col-md-6">
+      <h1 class="text-primary"><i class="bi bi-clipboard-data"></i> Bitácora de Actividades</h1>
+    </div>
+    <div class="col-md-3">
+      <div class="card bg-primary text-white text-center">
+        <div class="card-body p-2">
+          <h6>Total de Tareas</h6>
+          <h4 class="mb-0">{{ tasks_pagination.total }}</h4>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3 text-end">
+      <h5 id="clock" class="text-muted mb-0"></h5>
+    </div>
+  </div>
+
+  <!-- Filtros -->
+  <form method="GET" class="d-flex flex-wrap gap-2 align-items-end mb-4">
+    <select name="status" class="form-select">
+      <option value="">Todos los Estados</option>
+      {% for estado in ['Pendiente', 'En curso', 'Finalizada'] %}
+        <option value="{{ estado }}" {% if request.args.get('status') == estado %}selected{% endif %}>{{ estado }}</option>
+      {% endfor %}
+    </select>
+    <select name="priority" class="form-select">
+      <option value="">Todas las Prioridades</option>
+      {% for prioridad in ['Alta', 'Media', 'Baja'] %}
+        <option value="{{ prioridad }}" {% if request.args.get('priority') == prioridad %}selected{% endif %}>{{ prioridad }}</option>
+      {% endfor %}
+    </select>
+    <select name="participant" class="form-select">
+      <option value="">Todos los Participantes</option>
+      {% for participant in participants %}
+        <option value="{{ participant.id }}" {% if request.args.get('participant') == participant.id|string %}selected{% endif %}>{{ participant.username }}</option>
+      {% endfor %}
+    </select>
+    <button type="submit" class="btn btn-secondary">
+      <i class="bi bi-search"></i> Filtrar
+    </button>
+  </form>
+
+  <!-- Tabla de Tareas Paginada -->
+  <div class="table-responsive">
+    <table class="table table-hover table-bordered align-middle text-center">
+      <thead class="table-dark">
+        <tr>
+          <th>#</th>
+          <th>Título</th>
+          <th>Estado</th>
+          <th>Progreso</th>
+          <th>Prioridad</th>
+          <th>Categoría</th>
+          <th>Fechas</th>
+          <th>Participantes</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for task in tasks_pagination.items %}
+        <tr>
+          <td>{{ task.id }}</td>
+          <td>{{ task.title }}</td>
+          <td><span class="badge bg-{{ 'warning' if task.status == 'Pendiente' else 'info' if task.status == 'En curso' else 'success' }}">{{ task.status }}</span></td>
+          <td>{{ task.progress }}%</td>
+          <td><span class="badge bg-{{ 'danger' if task.priority == 'Alta' else 'primary' if task.priority == 'Media' else 'secondary' }}">{{ task.priority }}</span></td>
+          <td>{{ task.category or "Sin categoría" }}</td>
+          <td>
+            <small><strong>Inicio:</strong> {{ task.start_date.strftime('%Y-%m-%d') if task.start_date else "N/A" }}</small><br>
+            <small><strong>Fin:</strong> {{ task.end_date.strftime('%Y-%m-%d') if task.end_date else "N/A" }}</small>
+          </td>
+          <td>
+            {% if task.participants %}
+              <ul class="list-unstyled mb-0">
+                {% for p in task.participants %}<li>{{ p.username }}</li>{% endfor %}
+              </ul>
+            {% else %}Sin participantes{% endif %}
+          </td>
+          <td>
+            <button class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#taskModal{{ task.id }}">
+              <i class="bi bi-eye"></i>
+            </button>
+          </td>
+        </tr>
+
+        <!-- Modal Detalles de Tarea -->
+        <div class="modal fade" id="taskModal{{ task.id }}" tabindex="-1" aria-labelledby="taskModalLabel{{ task.id }}" aria-hidden="true">
+          <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="taskModalLabel{{ task.id }}">Detalles de la Tarea #{{ task.id }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+              </div>
+              <div class="modal-body">
+                <p><strong>Título:</strong> {{ task.title }}</p>
+                <p><strong>Descripción:</strong> {{ task.description or "Sin descripción" }}</p>
+                <p><strong>Estado:</strong> {{ task.status }}</p>
+                <p><strong>Progreso:</strong> {{ task.progress }}%</p>
+                <p><strong>Prioridad:</strong> {{ task.priority }}</p>
+                <p><strong>Categoría:</strong> {{ task.category or "Sin categoría" }}</p>
+                <p><strong>Fecha de Inicio:</strong> {{ task.start_date.strftime('%Y-%m-%d') if task.start_date else "No definida" }}</p>
+                <p><strong>Fecha de Finalización:</strong> {{ task.end_date.strftime('%Y-%m-%d') if task.end_date else "No definida" }}</p>
+                <p><strong>Participantes:</strong></p>
+                {% if task.participants %}
+                  <ul>{% for p in task.participants %}<li>{{ p.username }}</li>{% endfor %}</ul>
+                {% else %}<p>Sin participantes asignados</p>{% endif %}
+                <p><strong>Comentarios:</strong> {{ task.comments or "Sin comentarios" }}</p>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Paginador -->
+  <nav aria-label="Paginación">
+    <ul class="pagination justify-content-center">
+      {% if tasks_pagination.has_prev %}
+        <li class="page-item">
+          <a class="page-link" href="?page={{ tasks_pagination.prev_num }}">&laquo;</a>
+        </li>
+      {% endif %}
+      {% for num in tasks_pagination.iter_pages() %}
+        {% if num %}
+          <li class="page-item {% if num == tasks_pagination.page %}active{% endif %}">
+            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+          </li>
+        {% else %}
+          <li class="page-item disabled"><span class="page-link">…</span></li>
+        {% endif %}
+      {% endfor %}
+      {% if tasks_pagination.has_next %}
+        <li class="page-item">
+          <a class="page-link" href="?page={{ tasks_pagination.next_num }}">&raquo;</a>
+        </li>
+      {% endif %}
+    </ul>
+  </nav>
+
+  <!-- Tarjetas por Participante -->
+  <h3 class="text-primary mt-5"><i class="bi bi-person-badge"></i> Tareas por Participante</h3>
+  <div class="row">
+    {% for participant in participants %}
+    <div class="col-md-4">
+      <div class="card shadow mb-4">
+        <div class="card-header bg-dark text-white">
+          <h5 class="mb-0"><i class="bi bi-person-circle"></i> {{ participant.username }}</h5>
+        </div>
+        <div class="card-body">
+          {% set user_tasks = tasks_pagination.items | selectattr('participants', 'defined') | selectattr('participants', 'contains', participant) | list %}
+          {% if user_tasks %}
+            <ul class="list-group">
+              {% for tarea in user_tasks %}
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                {{ tarea.title }}
+                <span class="badge bg-secondary">{{ tarea.status }}</span>
+              </li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <p class="text-muted">Sin tareas asignadas.</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<script>
+  function updateClock() {
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    const timeStr = now.toLocaleTimeString('es-ES');
+    document.getElementById("clock").textContent = dateStr + ' - ' + timeStr;
+  }
+  setInterval(updateClock, 1000);
+  updateClock();
+</script>
+
+{% endblock %}

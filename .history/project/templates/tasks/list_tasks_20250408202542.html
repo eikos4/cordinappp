@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Listado de Tareas{% endblock %}
+{% block content %}
+
+
+
+<script>
+  function updateClock() {
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    const timeStr = now.toLocaleTimeString('es-ES');
+    document.getElementById("clock").textContent = dateStr + ' - ' + timeStr;
+  }
+  setInterval(updateClock, 1000);
+  updateClock();
+</script>
+
+{% endblock %}

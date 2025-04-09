@@ -1,0 +1,384 @@
+{% extends "base.html" %}
+
+
+{% block title %}
+  Inicio - AtSTATUS
+{% endblock %}
+
+{% block content %}
+
+<div class="container">
+
+  <!-- Encabezado Principal -->
+  <div class="text-center">
+    <h1 class="mb-3">Bienvenido a AtSTATUS</h1>
+
+    <div class="text-center mt-4">
+      <img src="{{ url_for('static', filename='img/logo.gif') }}" alt="Imagen de Bienvenida" class="img-fluid" style="max-width: 100%; border-radius: 10px;">
+    </div>
+
+    <h2 id="clock" class="mt-3 text-muted"></h2>
+  
+  </div>
+   <!-- Tabla de Reuniones -->
+
+   <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="text-primary"><i class="bi bi-calendar3"></i> Historial de Reuniones de Coordinación</h1>
+  </div>
+
+
+
+   <div class="table-responsive">
+    <table class="table table-hover table-bordered" id="meetings-table">
+      <thead class="table-primary">
+        <tr>
+          <th>Título</th>
+          <th>Fecha</th>
+          <th>Creador</th>
+          <th>Agenda</th>
+          <th>Participantes</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for m in meetings %}
+        <tr>
+          <td>{{ m.title }}</td>
+          <td>{{ m.date.strftime('%Y-%m-%d %H:%M') }}</td>
+          <td>{{ m.creator.username if m.creator else "N/A" }}</td>
+          <td>{{ m.agenda if m.agenda else "Sin agenda" }}</td>
+          <td>
+            {% if m.participants %}
+              {% for participant in m.participants %}
+                <span class="badge bg-info text-dark">{{ participant.username }}</span>
+              {% endfor %}
+            {% else %}
+              <span class="text-muted">Sin participantes</span>
+            {% endif %}
+          </td>
+          <td>
+            <div class="btn-group">
+              <button type="button" class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#detailsModal-{{ m.id }}">
+                <i class="bi bi-eye"></i> Detalles
+              </button>
+            </div>
+          </td>
+        </tr>
+
+        <!-- Modal para Detalles -->
+        <div class="modal fade" id="detailsModal-{{ m.id }}" tabindex="-1" aria-labelledby="detailsModalLabel-{{ m.id }}" aria-hidden="true">
+          <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="detailsModalLabel-{{ m.id }}">Detalles de la Reunión: {{ m.title }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+              </div>
+              <div class="modal-body">
+                <p><strong>Título:</strong> {{ m.title }}</p>
+                <p><strong>Fecha:</strong> {{ m.date.strftime('%Y-%m-%d %H:%M') }}</p>
+                <p><strong>Creador:</strong> {{ m.creator.username if m.creator else "N/A" }}</p>
+                <p><strong>Agenda:</strong> {{ m.agenda if m.agenda else "Sin agenda" }}</p>
+                <p><strong>Participantes:</strong></p>
+                <ul>
+                  {% if m.participants %}
+                    {% for participant in m.participants %}
+                      <li>{{ participant.username }}</li>
+                    {% endfor %}
+                  {% else %}
+                    <li>Sin participantes</li>
+                  {% endif %}
+                </ul>
+              
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% else %}
+        <tr>
+          <td colspan="6" class="text-center">No hay reuniones registradas.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+   
+<div class="row mb-4">
+  {% for participant in participants %}
+  <div class="col-md-3">
+    <a href="{{ url_for('tasks.list_tasks', participant_id=participant.id) }}" class="text-decoration-none">
+      <div class="card shadow text-center">
+        <div class="card-body">
+          <img src="{{ participant.avatar_url }}" alt="{{ participant.username }}" class="rounded-circle mb-2" style="width: 60px; height: 60px;">
+          <h6 class="mb-1">{{ participant.username }}</h6>
+          <span class="badge bg-primary">{{ participant.tasks_count }} tareas</span>
+        </div>
+      </div>
+    </a>
+  </div>
+  {% endfor %}
+</div>
+
+
+
+
+  <!-- Resumen Rápido -->
+  <div class="row my-4">
+    <div class="col-md-3">
+      <div class="card bg-primary text-white text-center">
+        <div class="card-body">
+          <h4>Total Tareas</h4>
+          <h2>{{ tasks_all|length }}</h2>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card bg-warning text-dark text-center">
+        <div class="card-body">
+          <h4>Tareas Pendientes</h4>
+          <h2>{{ tasks_all|selectattr("status", "equalto", "Pendiente")|list|length }}</h2>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card bg-info text-white text-center">
+        <div class="card-body">
+          <h4>Tareas En Curso</h4>
+          <h2>{{ tasks_all|selectattr("status", "equalto", "En curso")|list|length }}</h2>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card bg-success text-white text-center">
+        <div class="card-body">
+          <h4>Tareas Finalizadas</h4>
+          <h2>{{ tasks_all|selectattr("status", "equalto", "Finalizada")|list|length }}</h2>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filtros -->
+  <div class="row mb-4">
+    <div class="col-md-8">
+      <form method="GET" action="{{ url_for('tasks.list_tasks') }}" class="d-flex">
+        <label for="assigned_to" class="form-label me-2 mb-0 align-self-center">Responsable:</label>
+        <select name="assigned_to" id="assigned_to" class="form-select me-2">
+          <option value="">-- Todos --</option>
+          {% for user in users %}
+          <option value="{{ user.id }}" {% if selected_user == user.id %}selected{% endif %}>
+            {{ user.username }}
+          </option>
+          {% endfor %}
+        </select>
+        <label for="category" class="form-label me-2 mb-0 align-self-center">Categoría:</label>
+        <select name="category" id="category" class="form-select me-2">
+          <option value="">-- Todas --</option>
+          <option value="Desarrollo">Desarrollo</option>
+          <option value="Investigación">Investigación</option>
+          <option value="Revisión">Revisión</option>
+        </select>
+        <button type="submit" class="btn btn-secondary">Filtrar</button>
+      </form>
+    </div>
+
+    <!-- Botón para Nueva Tarea -->
+    <div class="col-md-4 text-end">
+      <a href="{{ url_for('tasks.new_task') }}" class="btn btn-primary"><i class="bi bi-plus-circle"></i> Nueva Tarea</a>
+    </div>
+  </div>
+  <div class="container py-4">
+    <!-- Encabezado -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h1 class="text-primary"><i class="bi bi-clipboard-data"></i> Listado de Tareas</h1>
+    </div>
+  
+    <!-- Tabla Principal -->
+    <div class="table-responsive">
+      <table class="table table-hover table-bordered">
+        <thead class="table-dark">
+          <tr>
+            <th>#</th>
+            <th>Título</th>
+
+            <th>Participantes</th>
+
+
+            <th>Estado</th>
+            <th>Progreso</th>
+            <th>Prioridad</th>
+            <th>Categoría</th>
+            <th>Fecha Inicio</th>
+            <th>Fecha Entrega</th>
+
+      
+
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for task in tasks_all %}
+          <tr>
+            <td>{{ task.id }}</td>
+            <td>{{ task.title }}</td>
+            <th>
+
+              {% if task.participants %}
+              <ul class="list-unstyled mb-0">
+                {% for participant in task.participants %}
+                <li>{{ participant.username }}</li>
+                {% endfor %}
+              </ul>
+              {% else %}
+              <span class="text-muted">Sin participantes</span>
+              {% endif %}
+
+
+            </th>
+            <td>
+              <span class="badge {% if task.status == 'Pendiente' %}bg-warning{% elif task.status == 'En curso' %}bg-info{% elif task.status == 'Finalizada' %}bg-success{% endif %}">
+                {{ task.status }}
+              </span>
+            </td>
+            <td>{{ task.progress }}%</td>
+            <td>
+              <span class="badge {% if task.priority == 'Alta' %}bg-danger{% elif task.priority == 'Media' %}bg-primary{% else %}bg-secondary{% endif %}">
+                {{ task.priority }}
+              </span>
+            </td>
+            <td>{{ task.category or "Sin categoría" }}</td>
+            <td>{{ task.start_date.strftime('%Y-%m-%d') if task.start_date else "N/A" }}</td>
+            <td>{{ task.due_date.strftime('%Y-%m-%d') if task.due_date else "N/A" }}</td>
+          
+            <td>
+              <button class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#taskModal{{ task.id }}">
+                <i class="bi bi-eye"></i> Ver Detalles
+              </button>
+            </td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="10" class="text-center">No hay tareas registradas.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  
+    <!-- Modales para Detalles de Tareas -->
+    {% for task in tasks_all %}
+    <div class="modal fade" id="taskModal{{ task.id }}" tabindex="-1" aria-labelledby="taskModalLabel{{ task.id }}" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="taskModalLabel{{ task.id }}">Detalles de la Tarea #{{ task.id }}</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+          </div>
+          <div class="modal-body">
+            <!-- Información General -->
+            <p><strong>Título:</strong> {{ task.title }}</p>
+            <p><strong>Descripción:</strong> {{ task.description or "Sin descripción" }}</p>
+            <p><strong>Estado:</strong> {{ task.status }}</p>
+            <p><strong>Progreso:</strong> {{ task.progress }}%</p>
+            <p><strong>Prioridad:</strong> {{ task.priority }}</p>
+            <p><strong>Categoría:</strong> {{ task.category or "Sin categoría" }}</p>
+  
+            <!-- Fechas -->
+            <p><strong>Fecha de Inicio:</strong> {{ task.start_date.strftime('%Y-%m-%d') if task.start_date else "N/A" }}</p>
+            <p><strong>Fecha de Entrega:</strong> {{ task.due_date.strftime('%Y-%m-%d') if task.due_date else "N/A" }}</p>
+  
+            <!-- Participantes -->
+            <p><strong>Participantes:</strong></p>
+            {% if task.participants %}
+            <ul>
+              {% for participant in task.participants %}
+              <li>{{ participant.username }}</li>
+              {% endfor %}
+            </ul>
+            {% else %}
+            <p>Sin participantes asignados</p>
+            {% endif %}
+  
+            <!-- Comentarios -->
+            <p><strong>Comentarios:</strong> {{ task.comments or "Sin comentarios" }}</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  
+
+
+
+
+  <div class="row mb-4">
+    {% for participant in participants %}
+    <div class="col-md-3">
+      <a href="{{ url_for('tasks.list_tasks', participant_id=participant.id) }}" class="text-decoration-none">
+        <div class="card shadow text-center">
+          <div class="card-body">
+            <img src="{{ participant.avatar_url or '/static/default_avatar.png' }}" alt="{{ participant.username }}" class="rounded-circle mb-2" style="width: 60px; height: 60px;">
+            <h6 class="mb-1">{{ participant.username }}</h6>
+            <span class="badge bg-primary">{{ participant.tasks_count }} tareas</span>
+          </div>
+        </div>
+      </a>
+    </div>
+    {% endfor %}
+  </div>
+  
+  
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <!-- Acciones Rápidas -->
+  <div class="text-center mt-5">
+    <a class="btn btn-primary" href="{{ url_for('meetings.new_meeting') }}">Tomar Minuta Semanal</a>
+     <!-- <a class="btn btn-secondary" href="{{ url_for('tasks.list_tasks') }}">Editar Tareas</a>-->
+  </div>
+
+
+</div>
+
+
+
+
+
+
+<!-- Script para el Reloj -->
+<script>
+  function updateClock() {
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('es-ES', {
+      weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+    });
+    const timeStr = now.toLocaleTimeString('es-ES');
+    document.getElementById("clock").textContent = dateStr + ' - ' + timeStr;
+  }
+  setInterval(updateClock, 1000);
+  updateClock();
+</script>
+
+
+
+{% endblock %}

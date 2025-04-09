@@ -1,0 +1,132 @@
+{% set meetings = meetings_pagination.items %}
+
+<div class="table-responsive">
+  <table class="table table-hover table-bordered" id="meetings-table">
+    <thead class="table-primary">
+      <tr>
+        <th>Título</th>
+        <th>Fecha</th>
+        <th>Creador</th>
+        <th>Agenda</th>
+        <th>Participantes</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for m in meetings %}
+      <tr>
+        <td>{{ m.title }}</td>
+        <td>{{ m.date.strftime('%Y-%m-%d %H:%M') }}</td>
+        <td>{{ m.creator.username if m.creator else "N/A" }}</td>
+        <td>{{ m.agenda if m.agenda else "Sin agenda" }}</td>
+        <td>
+          {% if m.participants %}
+            {% for participant in m.participants %}
+              <span class="badge bg-info text-dark">{{ participant.username }}</span>
+            {% endfor %}
+          {% else %}
+            <span class="text-muted">Sin participantes</span>
+          {% endif %}
+        </td>
+        <td>
+          <div class="btn-group">
+            <button type="button" class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#detailsModal-{{ m.id }}">
+              <i class="bi bi-eye"></i> Detalles
+            </button>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<!-- PAGINACIÓN DE REUNIONES -->
+<nav aria-label="Paginación de Reuniones">
+  <ul class="pagination justify-content-center">
+    {% if meetings_pagination.has_prev %}
+      <li class="page-item">
+        <a class="page-link" href="{{ url_for('index', meetings_page=meetings_pagination.prev_num, tasks_page=tasks_pagination.page) }}">Anterior</a>
+      </li>
+    {% else %}
+      <li class="page-item disabled"><span class="page-link">Anterior</span></li>
+    {% endif %}
+
+    {% for page_num in meetings_pagination.iter_pages() %}
+      {% if page_num %}
+        <li class="page-item {% if page_num == meetings_pagination.page %}active{% endif %}">
+          <a class="page-link" href="{{ url_for('index', meetings_page=page_num, tasks_page=tasks_pagination.page) }}">{{ page_num }}</a>
+        </li>
+      {% else %}
+        <li class="page-item disabled"><span class="page-link">…</span></li>
+      {% endif %}
+    {% endfor %}
+
+    {% if meetings_pagination.has_next %}
+      <li class="page-item">
+        <a class="page-link" href="{{ url_for('index', meetings_page=meetings_pagination.next_num, tasks_page=tasks_pagination.page) }}">Siguiente</a>
+      </li>
+    {% else %}
+      <li class="page-item disabled"><span class="page-link">Siguiente</span></li>
+    {% endif %}
+  </ul>
+</nav>
+
+
+
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ <!-- Resumen Rápido -->
+ <div class="row my-4">
+  <div class="col-md-3">
+    <div class="card bg-primary text-white text-center">
+      <div class="card-body">
+        <h4>Total Tareas</h4>
+        <h2>{{ tasks_all|length }}</h2>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card bg-warning text-dark text-center">
+      <div class="card-body">
+        <h4>Tareas Pendientes</h4>
+        <h2>{{ tasks_all|selectattr("status", "equalto", "Pendiente")|list|length }}</h2>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card bg-info text-white text-center">
+      <div class="card-body">
+        <h4>Tareas En Curso</h4>
+        <h2>{{ tasks_all|selectattr("status", "equalto", "En curso")|list|length }}</h2>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card bg-success text-white text-center">
+      <div class="card-body">
+        <h4>Tareas Finalizadas</h4>
+        <h2>{{ tasks_all|selectattr("status", "equalto", "Finalizada")|list|length }}</h2>
+      </div>
+    </div>
+  </div>
+</div>

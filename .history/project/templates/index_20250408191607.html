@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+{% block title %}Inicio - AtSTATUS{% endblock %}
+{% block content %}
+
+{% set meetings = meetings_pagination.items %}
+{% set tasks_all = tasks_pagination.items %}
+
+<!-- 🟦 Bienvenida -->
+<div class="text-center my-4">
+  <h1>Bienvenido a AtSTATUS</h1>
+  <img src="{{ url_for('static', filename='img/logo.gif') }}" class="img-fluid" style="border-radius: 10px;">
+  <h2 id="clock" class="text-muted mt-3"></h2>
+</div>
+
+<!-- 📅 Tabla de Reuniones -->
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h2 class="text-primary"><i class="bi bi-calendar3"></i>  Reuniones</h2>
+</div>
+<div class="table-responsive">
+  <table class="table table-hover table-bordered">
+    <thead class="table-primary">
+      <tr>
+        <th>Título</th><th>Fecha</th><th>Creador</th><th>Agenda</th><th>Participantes</th><th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for m in meetings %}
+      <tr>
+        <td>{{ m.title }}</td>
+        <td>{{ m.date.strftime('%Y-%m-%d %H:%M') }}</td>
+        <td>{{ m.creator.username if m.creator else "N/A" }}</td>
+        <td>{{ m.agenda or "Sin agenda" }}</td>
+        <td>
+          {% for p in m.participants %}
+            <span class="badge bg-info text-dark">{{ p.username }}</span>
+          {% endfor %}
+        </td>
+        <td>
+          <button class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#meetingModal{{ m.id }}">Ver Detalles</button>
+        </td>
+      </tr>
+
+      <!-- Modal Detalles Reunión -->
+      <div class="modal fade" id="meetingModal{{ m.id }}" tabindex="-1">
+        <div class="modal-dialog"><div class="modal-content">
+          <div class="modal-header"><h5 class="modal-title">Detalles de Reunión</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+          <div class="modal-body">
+            <p><strong>Título:</strong> {{ m.title }}</p>
+            <p><strong>Agenda:</strong> {{ m.agenda or "Sin agenda" }}</p>
+            <p><strong>Fecha:</strong> {{ m.date.strftime('%Y-%m-%d %H:%M') }}</p>
+            <p><strong>Creador:</strong> {{ m.creator.username if m.creator else "N/A" }}</p>
+            <p><strong>Participantes:</strong></p>
+            <ul>{% for p in m.participants %}<li>{{ p.username }}</li>{% endfor %}</ul>
+          </div>
+        </div></div>
+      </div>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<!-- 🔁 Paginación Reuniones -->
+<nav class="my-4">
+  <ul class="pagination justify-content-center">
+    {% if meetings_pagination.has_prev %}
+      <li class="page-item"><a class="page-link" href="{{ url_for('main.index', meetings_page=meetings_pagination.prev_num, tasks_page=tasks_pagination.page) }}">Anterior</a></li>
+    {% else %}
+      <li class="page-item disabled"><span class="page-link">Anterior</span></li>
+    {% endif %}
+    {% for page_num in meetings_pagination.iter_pages() %}
+      <li class="page-item {% if page_num == meetings_pagination.page %}active{% endif %}">
+        <a class="page-link" href="{{ url_for('main.index', meetings_page=page_num, tasks_page=tasks_pagination.page) }}">{{ page_num }}</a>
+      </li>
+    {% endfor %}
+    {% if meetings_pagination.has_next %}
+      <li class="page-item"><a class="page-link" href="{{ url_for('main.index', meetings_page=meetings_pagination.next_num, tasks_page=tasks_pagination.page) }}">Siguiente</a></li>
+    {% else %}
+      <li class="page-item disabled"><span class="page-link">Siguiente</span></li>
+    {% endif %}
+  </ul>
+</nav>
+
+<!-- 📋 Tabla de Tareas -->
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h2 class="text-primary"><i class="bi bi-clipboard-data"></i> Tareas</h2>
+</div>
+<div class="table-responsive">
+  <table class="table table-hover table-bordered">
+    <thead class="table-dark">
+      <tr>
+        <th>#</th><th>Título</th><th>Participantes</th><th>Estado</th><th>Progreso</th><th>Prioridad</th><th>Categoría</th><th>Inicio</th><th>Entrega</th><th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for task in tasks_all %}
+      <tr>
+        <td>{{ task.id }}</td>
+        <td>{{ task.title }}</td>
+        <td>
+          <ul class="list-unstyled mb-0">
+            {% for p in task.participants %}<li>{{ p.username }}</li>{% endfor %}
+          </ul>
+        </td>
+        <td><span class="badge bg-{{ 'warning' if task.status == 'Pendiente' else 'info' if task.status == 'En curso' else 'success' }}">{{ task.status }}</span></td>
+        <td>{{ task.progress }}%</td>
+        <td><span class="badge bg-{{ 'danger' if task.priority == 'Alta' else 'primary' if task.priority == 'Media' else 'secondary' }}">{{ task.priority }}</span></td>
+        <td>{{ task.category or "Sin categoría" }}</td>
+        <td>{{ task.start_date.strftime('%Y-%m-%d') if task.start_date else 'N/A' }}</td>
+        <td>{{ task.due_date.strftime('%Y-%m-%d') if task.due_date else 'N/A' }}</td>
+        <td>
+          <button class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#taskModal{{ task.id }}">Ver Detalles</button>
+        </td>
+      </tr>
+
+      <!-- Modal Detalles Tarea -->
+      <div class="modal fade" id="taskModal{{ task.id }}" tabindex="-1">
+        <div class="modal-dialog"><div class="modal-content">
+          <div class="modal-header"><h5 class="modal-title">Detalles de Tarea</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+          <div class="modal-body">
+            <p><strong>Título:</strong> {{ task.title }}</p>
+            <p><strong>Descripción:</strong> {{ task.description or "Sin descripción" }}</p>
+            <p><strong>Estado:</strong> {{ task.status }}</p>
+            <p><strong>Progreso:</strong> {{ task.progress }}%</p>
+            <p><strong>Prioridad:</strong> {{ task.priority }}</p>
+            <p><strong>Categoría:</strong> {{ task.category or "Sin categoría" }}</p>
+            <p><strong>Fecha de Inicio:</strong> {{ task.start_date.strftime('%Y-%m-%d') if task.start_date else "N/A" }}</p>
+            <p><strong>Fecha de Entrega:</strong> {{ task.due_date.strftime('%Y-%m-%d') if task.due_date else "N/A" }}</p>
+            <p><strong>Participantes:</strong></p>
+            <ul>{% for p in task.participants %}<li>{{ p.username }}</li>{% endfor %}</ul>
+          </div>
+        </div></div>
+      </div>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<!-- 🔁 Paginación Tareas -->
+<nav class="my-4">
+  <ul class="pagination justify-content-center">
+    {% if tasks_pagination.has_prev %}
+      <li class="page-item"><a class="page-link" href="{{ url_for('main.index', tasks_page=tasks_pagination.prev_num, meetings_page=meetings_pagination.page) }}">Anterior</a></li>
+    {% else %}
+      <li class="page-item disabled"><span class="page-link">Anterior</span></li>
+    {% endif %}
+    {% for page_num in tasks_pagination.iter_pages() %}
+      <li class="page-item {% if page_num == tasks_pagination.page %}active{% endif %}">
+        <a class="page-link" href="{{ url_for('main.index', tasks_page=page_num, meetings_page=meetings_pagination.page) }}">{{ page_num }}</a>
+      </li>
+    {% endfor %}
+    {% if tasks_pagination.has_next %}
+      <li class="page-item"><a class="page-link" href="{{ url_for('main.index', tasks_page=tasks_pagination.next_num, meetings_page=meetings_pagination.page) }}">Siguiente</a></li>
+    {% else %}
+      <li class="page-item disabled"><span class="page-link">Siguiente</span></li>
+    {% endif %}
+  </ul>
+</nav>
+
+<!-- Acciones Rápidas -->
+<div class="text-center mt-4">
+  <a class="btn btn-primary" href="{{ url_for('meetings.new_meeting') }}">Tomar Minuta Semanal</a>
+</div>
+
+<!-- Reloj JS -->
+<script>
+  function updateClock() {
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('es-ES', {
+      weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+    });
+    const timeStr = now.toLocaleTimeString('es-ES');
+    document.getElementById("clock").textContent = dateStr + ' - ' + timeStr;
+  }
+  setInterval(updateClock, 1000); updateClock();
+</script>
+
+{% endblock %}

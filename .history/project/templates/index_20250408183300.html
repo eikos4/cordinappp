@@ -1,0 +1,387 @@
+{% extends "base.html" %}
+{% set meetings = meetings_pagination.items %}
+
+{% block title %}
+  Inicio - AtSTATUS
+{% endblock %}
+
+{% block content %}
+
+<div class="container">
+
+  <!-- Encabezado Principal -->
+  <div class="text-center">
+    <h1 class="mb-3">Bienvenido a AtSTATUS</h1>
+
+    <div class="text-center mt-4">
+      <img src="{{ url_for('static', filename='img/logo.gif') }}" alt="Imagen de Bienvenida" class="img-fluid" style="max-width: 100%; border-radius: 10px;">
+    </div>
+
+    <h2 id="clock" class="mt-3 text-muted"></h2>
+  
+  </div>
+   <!-- Tabla de Reuniones -->
+
+   <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="text-primary"><i class="bi bi-calendar3"></i> Historial de Reuniones de Coordinación</h1>
+  </div>
+
+
+
+
+  {% set tasks_all = tasks_pagination.items %}
+
+<!-- Tabla Principal de Tareas -->
+<div class="table-responsive">
+  <table class="table table-hover table-bordered">
+    <thead class="table-dark">
+      <tr>
+        <th>#</th>
+        <th>Título</th>
+        <th>Participantes</th>
+        <th>Estado</th>
+        <th>Progreso</th>
+        <th>Prioridad</th>
+        <th>Categoría</th>
+        <th>Fecha Inicio</th>
+        <th>Fecha Entrega</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for task in tasks_all %}
+      <tr>
+        <td>{{ task.id }}</td>
+        <td>{{ task.title }}</td>
+        <td>
+          {% if task.participants %}
+          <ul class="list-unstyled mb-0">
+            {% for participant in task.participants %}
+            <li>{{ participant.username }}</li>
+            {% endfor %}
+          </ul>
+          {% else %}
+          <span class="text-muted">Sin participantes</span>
+          {% endif %}
+        </td>
+        <td>
+          <span class="badge {% if task.status == 'Pendiente' %}bg-warning{% elif task.status == 'En curso' %}bg-info{% elif task.status == 'Finalizada' %}bg-success{% endif %}">
+            {{ task.status }}
+          </span>
+        </td>
+        <td>{{ task.progress }}%</td>
+        <td>
+          <span class="badge {% if task.priority == 'Alta' %}bg-danger{% elif task.priority == 'Media' %}bg-primary{% else %}bg-secondary{% endif %}">
+            {{ task.priority }}
+          </span>
+        </td>
+        <td>{{ task.category or "Sin categoría" }}</td>
+        <td>{{ task.start_date.strftime('%Y-%m-%d') if task.start_date else "N/A" }}</td>
+        <td>{{ task.due_date.strftime('%Y-%m-%d') if task.due_date else "N/A" }}</td>
+        <td>
+          <button class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#taskModal{{ task.id }}">
+            <i class="bi bi-eye"></i> Ver Detalles
+          </button>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<!-- PAGINACIÓN DE TAREAS -->
+<nav aria-label="Paginación de Tareas">
+  <ul class="pagination justify-content-center">
+    {% if tasks_pagination.has_prev %}
+      <li class="page-item">
+        <a class="page-link" href="{{ url_for('main.index', meetings_page=meetings_pagination.page, tasks_page=tasks_pagination.prev_num) }}">Anterior</a>
+      </li>
+    {% else %}
+      <li class="page-item disabled"><span class="page-link">Anterior</span></li>
+    {% endif %}
+
+    {% for page_num in tasks_pagination.iter_pages() %}
+      {% if page_num %}
+        <li class="page-item {% if page_num == tasks_pagination.page %}active{% endif %}">
+          <a class="page-link" href="{{ url_for('main.index', meetings_page=meetings_pagination.page, tasks_page=page_num) }}">{{ page_num }}</a>
+        </li>
+      {% else %}
+        <li class="page-item disabled"><span class="page-link">…</span></li>
+      {% endif %}
+    {% endfor %}
+
+    {% if tasks_pagination.has_next %}
+      <li class="page-item">
+        <a class="page-link" href="{{ url_for('main.index', meetings_page=meetings_pagination.page, tasks_page=tasks_pagination.next_num) }}">Siguiente</a>
+      </li>
+    {% else %}
+      <li class="page-item disabled"><span class="page-link">Siguiente</span></li>
+    {% endif %}
+  </ul>
+</nav>
+
+
+
+  
+
+
+
+
+
+  <!-- Resumen Rápido -->
+  <div class="row my-4">
+    <div class="col-md-3">
+      <div class="card bg-primary text-white text-center">
+        <div class="card-body">
+          <h4>Total Tareas</h4>
+          <h2>{{ tasks_all|length }}</h2>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card bg-warning text-dark text-center">
+        <div class="card-body">
+          <h4>Tareas Pendientes</h4>
+          <h2>{{ tasks_all|selectattr("status", "equalto", "Pendiente")|list|length }}</h2>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card bg-info text-white text-center">
+        <div class="card-body">
+          <h4>Tareas En Curso</h4>
+          <h2>{{ tasks_all|selectattr("status", "equalto", "En curso")|list|length }}</h2>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card bg-success text-white text-center">
+        <div class="card-body">
+          <h4>Tareas Finalizadas</h4>
+          <h2>{{ tasks_all|selectattr("status", "equalto", "Finalizada")|list|length }}</h2>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filtros -->
+  <div class="row mb-4">
+    <div class="col-md-8">
+      <form method="GET" action="{{ url_for('tasks.list_tasks') }}" class="d-flex">
+        <label for="assigned_to" class="form-label me-2 mb-0 align-self-center">Responsable:</label>
+        <select name="assigned_to" id="assigned_to" class="form-select me-2">
+          <option value="">-- Todos --</option>
+          {% for user in users %}
+          <option value="{{ user.id }}" {% if selected_user == user.id %}selected{% endif %}>
+            {{ user.username }}
+          </option>
+          {% endfor %}
+        </select>
+        <label for="category" class="form-label me-2 mb-0 align-self-center">Categoría:</label>
+        <select name="category" id="category" class="form-select me-2">
+          <option value="">-- Todas --</option>
+          <option value="Desarrollo">Desarrollo</option>
+          <option value="Investigación">Investigación</option>
+          <option value="Revisión">Revisión</option>
+        </select>
+        <button type="submit" class="btn btn-secondary">Filtrar</button>
+      </form>
+    </div>
+
+    <!-- Botón para Nueva Tarea -->
+    <div class="col-md-4 text-end">
+      <a href="{{ url_for('tasks.new_task') }}" class="btn btn-primary"><i class="bi bi-plus-circle"></i> Nueva Tarea</a>
+    </div>
+  </div>
+  <div class="container py-4">
+    <!-- Encabezado -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h1 class="text-primary"><i class="bi bi-clipboard-data"></i> Listado de Tareas</h1>
+    </div>
+  
+    <!-- Tabla Principal -->
+    <div class="table-responsive">
+      <table class="table table-hover table-bordered">
+        <thead class="table-dark">
+          <tr>
+            <th>#</th>
+            <th>Título</th>
+
+            <th>Participantes</th>
+
+
+            <th>Estado</th>
+            <th>Progreso</th>
+            <th>Prioridad</th>
+            <th>Categoría</th>
+            <th>Fecha Inicio</th>
+            <th>Fecha Entrega</th>
+
+      
+
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for task in tasks_all %}
+          <tr>
+            <td>{{ task.id }}</td>
+            <td>{{ task.title }}</td>
+            <th>
+
+              {% if task.participants %}
+              <ul class="list-unstyled mb-0">
+                {% for participant in task.participants %}
+                <li>{{ participant.username }}</li>
+                {% endfor %}
+              </ul>
+              {% else %}
+              <span class="text-muted">Sin participantes</span>
+              {% endif %}
+
+
+            </th>
+            <td>
+              <span class="badge {% if task.status == 'Pendiente' %}bg-warning{% elif task.status == 'En curso' %}bg-info{% elif task.status == 'Finalizada' %}bg-success{% endif %}">
+                {{ task.status }}
+              </span>
+            </td>
+            <td>{{ task.progress }}%</td>
+            <td>
+              <span class="badge {% if task.priority == 'Alta' %}bg-danger{% elif task.priority == 'Media' %}bg-primary{% else %}bg-secondary{% endif %}">
+                {{ task.priority }}
+              </span>
+            </td>
+            <td>{{ task.category or "Sin categoría" }}</td>
+            <td>{{ task.start_date.strftime('%Y-%m-%d') if task.start_date else "N/A" }}</td>
+            <td>{{ task.due_date.strftime('%Y-%m-%d') if task.due_date else "N/A" }}</td>
+          
+            <td>
+              <button class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#taskModal{{ task.id }}">
+                <i class="bi bi-eye"></i> Ver Detalles
+              </button>
+            </td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="10" class="text-center">No hay tareas registradas.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  
+    <!-- Modales para Detalles de Tareas -->
+    {% for task in tasks_all %}
+    <div class="modal fade" id="taskModal{{ task.id }}" tabindex="-1" aria-labelledby="taskModalLabel{{ task.id }}" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="taskModalLabel{{ task.id }}">Detalles de la Tarea #{{ task.id }}</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+          </div>
+          <div class="modal-body">
+            <!-- Información General -->
+            <p><strong>Título:</strong> {{ task.title }}</p>
+            <p><strong>Descripción:</strong> {{ task.description or "Sin descripción" }}</p>
+            <p><strong>Estado:</strong> {{ task.status }}</p>
+            <p><strong>Progreso:</strong> {{ task.progress }}%</p>
+            <p><strong>Prioridad:</strong> {{ task.priority }}</p>
+            <p><strong>Categoría:</strong> {{ task.category or "Sin categoría" }}</p>
+  
+            <!-- Fechas -->
+            <p><strong>Fecha de Inicio:</strong> {{ task.start_date.strftime('%Y-%m-%d') if task.start_date else "N/A" }}</p>
+            <p><strong>Fecha de Entrega:</strong> {{ task.due_date.strftime('%Y-%m-%d') if task.due_date else "N/A" }}</p>
+  
+            <!-- Participantes -->
+            <p><strong>Participantes:</strong></p>
+            {% if task.participants %}
+            <ul>
+              {% for participant in task.participants %}
+              <li>{{ participant.username }}</li>
+              {% endfor %}
+            </ul>
+            {% else %}
+            <p>Sin participantes asignados</p>
+            {% endif %}
+  
+            <!-- Comentarios -->
+            <p><strong>Comentarios:</strong> {{ task.comments or "Sin comentarios" }}</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  
+
+
+
+
+  <div class="row mb-4">
+    {% for participant in participants %}
+    <div class="col-md-3">
+      <a href="{{ url_for('tasks.list_tasks', participant_id=participant.id) }}" class="text-decoration-none">
+        <div class="card shadow text-center">
+          <div class="card-body">
+            <img src="{{ participant.avatar_url or '/static/default_avatar.png' }}" alt="{{ participant.username }}" class="rounded-circle mb-2" style="width: 60px; height: 60px;">
+            <h6 class="mb-1">{{ participant.username }}</h6>
+            <span class="badge bg-primary">{{ participant.tasks_count }} tareas</span>
+          </div>
+        </div>
+      </a>
+    </div>
+    {% endfor %}
+  </div>
+  
+  
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <!-- Acciones Rápidas -->
+  <div class="text-center mt-5">
+    <a class="btn btn-primary" href="{{ url_for('meetings.new_meeting') }}">Tomar Minuta Semanal</a>
+     <!-- <a class="btn btn-secondary" href="{{ url_for('tasks.list_tasks') }}">Editar Tareas</a>-->
+  </div>
+
+
+</div>
+
+
+
+
+
+
+<!-- Script para el Reloj -->
+<script>
+  function updateClock() {
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('es-ES', {
+      weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+    });
+    const timeStr = now.toLocaleTimeString('es-ES');
+    document.getElementById("clock").textContent = dateStr + ' - ' + timeStr;
+  }
+  setInterval(updateClock, 1000);
+  updateClock();
+</script>
+
+
+
+{% endblock %}

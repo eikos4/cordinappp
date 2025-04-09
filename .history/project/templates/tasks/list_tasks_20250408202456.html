@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}Listado de Tareas{% endblock %}
+{% block content %}
+
+<div class="container py-4">
+  <!-- Encabezado -->
+  <div class="row align-items-center mb-4">
+    <div class="col-md-6">
+      <h1 class="text-primary"><i class="bi bi-clipboard-data"></i> Bitácora de Actividades</h1>
+    </div>
+    <div class="col-md-3">
+      <div class="card bg-primary text-white text-center">
+        <div class="card-body p-2">
+          <h6>Total de Tareas</h6>
+          <h4 class="mb-0">{{ tasks_pagination.total }}</h4>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3 text-end">
+      <h5 id="clock" class="text-muted mb-0"></h5>
+    </div>
+  </div>
+
+  <!-- Tarjetas por Participante -->
+  <h3 class="text-primary mt-5"><i class="bi bi-person-badge"></i> Tareas por Participante</h3>
+  <div class="row">
+    {% for participant in participants %}
+    <div class="col-md-4">
+      <div class="card shadow mb-4">
+        <div class="card-header bg-dark text-white">
+          <h5 class="mb-0"><i class="bi bi-person-circle"></i> {{ participant.username }}</h5>
+        </div>
+        <div class="card-body">
+          {% set user_tasks = namespace(lista=[]) %}
+          {% for t in tasks_pagination.items %}
+            {% if participant in t.participants %}
+              {% set _ = user_tasks.lista.append(t) %}
+            {% endif %}
+          {% endfor %}
+          {% if user_tasks.lista %}
+            <ul class="list-group">
+              {% for tarea in user_tasks.lista %}
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                {{ tarea.title }}
+                <span class="badge bg-secondary">{{ tarea.status }}</span>
+              </li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <p class="text-muted">Sin tareas asignadas.</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<script>
+  function updateClock() {
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    const timeStr = now.toLocaleTimeString('es-ES');
+    document.getElementById("clock").textContent = dateStr + ' - ' + timeStr;
+  }
+  setInterval(updateClock, 1000);
+  updateClock();
+</script>
+
+{% endblock %}

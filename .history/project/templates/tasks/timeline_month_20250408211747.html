@@ -1,0 +1,70 @@
+<!-- timeline_month.html -->
+
+{% extends "base.html" %}
+{% block title %}Línea de Tiempo Mensual{% endblock %}
+{% block content %}
+
+<div class="container py-4">
+
+  <!-- Encabezado -->
+  <h1 class="text-primary mb-4">
+    <i class="bi bi-calendar-event"></i> Línea de Tiempo de {{ month }}/{{ year }}
+  </h1>
+
+  <!-- Línea de tiempo del mes -->
+  <div class="timeline-month position-relative">
+
+    <!-- Iterar días del 1 al 31 (o 30,28,29 según el mes) -->
+    {% for day in range(1, 32) %}
+      <!-- Creamos una lista de tareas para este día -->
+      {% set day_tasks = namespace(lista=[]) %}
+      {% for t in tasks_all %}
+        {% if t.start_date and t.start_date.day == day %}
+          {% set _ = day_tasks.lista.append(t) %}
+        {% endif %}
+      {% endfor %}
+
+      <!-- Solo mostrar el bloque si day_tasks no está vacío -->
+      {% if day_tasks.lista %}
+      <div class="timeline-day mb-4">
+
+        <!-- Encabezado con la fecha -->
+        <div class="bg-dark text-white p-2 rounded">
+          <h5 class="mb-0">
+            <i class="bi bi-calendar4-week"></i> Día {{ day }}
+          </h5>
+        </div>
+
+        <!-- Listado de tareas en este día -->
+        <div class="mt-2 ms-4 border-start border-3 ps-3">
+          {% for task in day_tasks.lista %}
+          <div class="mb-3">
+            <h6 class="fw-bold mb-1">
+              <i class="bi bi-card-text"></i> {{ task.title }}
+            </h6>
+            <p class="mb-1">
+              <strong>Estado:</strong> {{ task.status }}<br>
+              <strong>Prioridad:</strong> {{ task.priority }}
+            </p>
+            <p class="mb-1">
+              <strong>Participantes:</strong>
+              {% if task.participants %}
+                <ul class="list-unstyled mb-0">
+                  {% for p in task.participants %}
+                  <li>{{ p.username }}</li>
+                  {% endfor %}
+                </ul>
+              {% else %}
+                <span class="text-muted">Sin participantes</span>
+              {% endif %}
+            </p>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+
+</div>
+{% endblock %}

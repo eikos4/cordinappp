@@ -1,0 +1,778 @@
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.9/main.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.9/main.min.js"></script>
+<script src="https://unpkg.com/frappe-gantt@0.5.0/dist/frappe-gantt.min.js"></script>
+
+
+{% extends "base.html" %}
+{% block title %}Listado de Tareas{% endblock %}
+{% block content %}
+
+<div class="container py-4">
+
+
+  <div class="container py-4">
+    <div class="container py-4">
+  
+      <!-- Encabezado Principal con Total de Reuniones y Reloj -->
+      <div class="row align-items-center mb-4">
+        <div class="col-md-6">
+          <h1 class="text-primary"><i class="bi bi-clipboard-data"></i> Bitácora de Actividades</h1>
+        </div>
+        <div class="col-md-3">
+          <div class="card bg-primary text-white text-center">
+            <div class="card-body p-2">
+              <h6>Total de Tareas</h6>
+              <h4 class="mb-0">{{ tasks_all|length }}</h4>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3 text-end">
+          <h5 id="clock" class="text-muted mb-0"></h5>
+        </div>
+      </div>
+
+  <!-- Encabezado -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+      
+      <a href="{{ url_for('tasks.new_task') }}" class="btn btn-success">
+        <i class="bi bi-plus-circle"></i> Nueva Tarea
+      </a>
+
+      
+    </div>
+  </div>
+
+<!-- TIMELINE MEJORADO Y ATRACTIVO -->
+<style>
+  .kanban-board {
+    display: flex;
+    gap: 1rem;
+    overflow-x: auto;
+  }
+  .kanban-column {
+    flex: 0 0 300px; /* ancho fijo */
+    background: #f8f9fa;
+    border-radius: 0.5rem;
+    padding: 1rem;
+  }
+  .kanban-card {
+    background: #fff;
+    border: 1px solid #e9ecef;
+    border-radius: 0.5rem;
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 5px rgba(221, 10, 10, 0.1);
+  }
+</style>
+
+  <!-- Encabezado principal opcional -->
+  <h2 class="text-center">)</h2>
+  <p class="text-center text-muted">Este ejemplo asume un mes de 28 días y no considera qué día de la semana inicia</p>
+  
+
+<div class="kanban-board">
+  <!-- Pendiente -->
+  <div class="kanban-column">
+    <h5 class="mb-3">Pendiente</h5>
+    {% for task in tasks_all if task.status == 'Pendiente' %}
+      <div class="kanban-card">
+        <strong>{{ task.title }}</strong>
+        <p class="mb-1">
+          Prioridad: {{ task.priority }}  
+        </p>
+        <small>Fecha Inicio: {{ task.start_date or 'N/A' }}</small>
+      </div>
+    {% endfor %}
+  </div>
+
+  <!-- En curso -->
+  <div class="kanban-column">
+    <h5 class="mb-3">En Curso</h5>
+    {% for task in tasks_all if task.status == 'En curso' %}
+      <div class="kanban-card">
+        <strong>{{ task.title }}</strong>
+        <!-- más info... -->
+      </div>
+    {% endfor %}
+  </div>
+
+  <!-- Finalizada -->
+  <div class="kanban-column">
+    <h5 class="mb-3">Finalizada</h5>
+    {% for task in tasks_all if task.status == 'Finalizada' %}
+      <div class="kanban-card">
+        <strong>{{ task.title }}</strong>
+        <!-- más info... -->
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+
+
+
+<style>
+  /* Contenedor general del calendario */
+  .calendar-container {
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+  }
+  /* 7 columnas: L, M, X, J, V, S, D */
+  .calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0.5rem;
+  }
+  /* Cada celda del día */
+  .calendar-day {
+    border: 1px solid #ddd;
+    min-height: 120px;
+    padding: 0.5rem;
+    background: #fdfdfd;
+    position: relative;
+    transition: background 0.2s;
+  }
+  .calendar-day:hover {
+    background: #f7f7f7;
+  }
+  /* Título del día */
+  .calendar-day h6 {
+    font-size: 0.9rem;
+    margin-bottom: 0.2rem;
+    color: #0d6efd;
+  }
+  /* Fila de encabezado con nombres de día */
+  .calendar-header {
+    text-align: center;
+    font-weight: bold;
+    color: #333;
+    padding: 0.5rem;
+    border-bottom: 2px solid #ccc;
+  }
+  /* Un contenedor para cada tarea */
+  .calendar-task {
+    margin-bottom: 0.4rem;
+    font-size: 0.88rem;
+    line-height: 1.2;
+  }
+  .calendar-task strong {
+    color: #333;
+  }
+  /* Badge para estado */
+  .badge-estado {
+    margin-left: 0.4rem;
+    padding: 0.1rem 0.3rem;
+    font-size: 0.75rem;
+    border-radius: 0.2rem;
+  }
+  </style>
+  
+  
+  <!-- Encabezado principal opcional -->
+  <h2 class="text-center">Vista Global</h2>
+ 
+  
+
+
+
+  <!-- Tarjetas Informativas -->
+
+  <div class="row mb-4">
+    <div class="col-md-3">
+      <a href="{{ url_for('tasks.list_tasks', status='') }}" class="text-decoration-none">
+        <div class="card bg-primary text-white text-center shadow">
+          <div class="card-body">
+            <h5><i class="bi bi-clipboard-check"></i> Total Tareas</h5>
+            <h3>{{ total_tasks }}</h3>
+          </div>
+        </div>
+      </a>
+    </div>
+    <div class="col-md-3">
+      <a href="{{ url_for('tasks.list_tasks', status='Pendiente') }}" class="text-decoration-none">
+        <div class="card bg-warning text-dark text-center shadow">
+          <div class="card-body">
+            <h5><i class="bi bi-clock"></i> Pendientes</h5>
+            <h3>{{ pending_tasks }}</h3>
+          </div>
+        </div>
+      </a>
+    </div>
+    <div class="col-md-3">
+      <a href="{{ url_for('tasks.list_tasks', status='En curso') }}" class="text-decoration-none">
+        <div class="card bg-info text-white text-center shadow">
+          <div class="card-body">
+            <h5><i class="bi bi-play-circle"></i> En Curso</h5>
+            <h3>{{ in_progress_tasks }}</h3>
+          </div>
+        </div>
+      </a>
+    </div>
+    <div class="col-md-3">
+      <a href="{{ url_for('tasks.list_tasks', status='Finalizada') }}" class="text-decoration-none">
+        <div class="card bg-success text-white text-center shadow">
+          <div class="card-body">
+            <h5><i class="bi bi-check-circle"></i> Finalizadas</h5>
+            <h3>{{ completed_tasks }}</h3>
+          </div>
+        </div>
+      </a>
+    </div>
+  </div>
+  
+  
+  
+
+  <!-- Filtros -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 class="text-primary"><i class="bi bi-funnel"></i> Filtros</h3>
+
+    <form method="GET" class="d-flex">
+      <select name="status" class="form-select me-2">
+        <option value="">Todos los Estados</option>
+        <option value="Pendiente">Pendiente</option>
+        <option value="En curso">En Curso</option>
+        <option value="Finalizada">Finalizada</option>
+      </select>
+      <select name="priority" class="form-select me-2">
+        <option value="">Todas las Prioridades</option>
+        <option value="Alta">Alta</option>
+        <option value="Media">Media</option>
+        <option value="Baja">Baja</option>
+      </select>
+      <select name="participant" class="form-select me-2">
+        <option value="">Todos los Participantes</option>
+        {% for participant in participants %}
+          <option value="{{ participant.id }}">{{ participant.username }}</option>
+        {% endfor %}
+      </select>
+      <button type="submit" class="btn btn-secondary">
+        <i class="bi bi-search"></i> Filtrar
+      </button>
+    </form>
+    
+ 
+  </div>
+
+    <!-- Tabla General de Tareas -->
+    <div class="table-responsive">
+      <table class="table table-hover table-bordered align-middle text-center">
+        <thead class="table-dark">
+          <tr>
+            <th>#</th>
+            <th>Título</th>
+            <th>Descripción</th>
+  
+            <th>Estado</th>
+            <th>Progreso</th>
+            <th>Prioridad</th>
+            <th>Categoría</th>
+            <th>Fechas</th>
+            <th>Responsable y Participantes</th>
+            <th>Dependencia</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for task in tasks_all %}
+          <tr>
+            <td>{{ task.id }}</td>
+            <td>{{ task.title }}</td>
+            <td>{{ task.description or "Sin descripción" }}</td>
+         
+            <td>
+              <span class="badge {% if task.status == 'Pendiente' %}bg-warning{% elif task.status == 'En curso' %}bg-info{% else %}bg-success{% endif %}">
+                {{ task.status }}
+              </span>
+            </td>
+            <td>{{ task.progress }}%</td>
+            <td>
+              <span class="badge {% if task.priority == 'Alta' %}bg-danger{% elif task.priority == 'Media' %}bg-primary{% else %}bg-secondary{% endif %}">
+                {{ task.priority }}
+              </span>
+            </td>
+            <td>{{ task.category or "Sin categoría" }}</td>
+            <td>
+              <small><strong>Inicio:</strong> {{ task.start_date.strftime('%Y-%m-%d') if task.start_date else "N/A" }}</small><br>
+              <small><strong>Fin:</strong> {{ task.end_date.strftime('%Y-%m-%d') if task.end_date else "N/A" }}</small><br>
+              
+            </td>
+            <td>
+              {% if task.participants %}
+              <ul class="list-unstyled mb-0">
+                {% for participant in task.participants %}
+                <li>{{ participant.username }}</li>
+                {% endfor %}
+              </ul>
+              {% else %}
+              Sin participantes
+              {% endif %}
+            </td>
+            <td>
+              {% if task.dependent_task %}
+              #{{ task.dependent_task.id }} - {{ task.dependent_task.title }}
+              {% else %}
+              Sin dependencia
+              {% endif %}
+            </td>
+            <td>
+              <button class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#taskModal{{ task.id }}">
+                <i class="bi bi-eye"></i> Ver
+              </button>
+            
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="12" class="text-center">No hay tareas registradas.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="container py-4">
+      <!-- Encabezado -->
+      <div class="row align-items-center mb-4">
+        <div class="col-md-6">
+          <h1 class="text-primary"><i class="bi bi-clipboard-data"></i> Bitácora de Actividades</h1>
+        </div>
+        <div class="col-md-3">
+          <div class="card bg-primary text-white text-center">
+            <div class="card-body p-2">
+              <h6>Total de Tareas</h6>
+              <h4 class="mb-0">{{ tasks_pagination.total }}</h4>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3 text-end">
+          <h5 id="clock" class="text-muted mb-0"></h5>
+        </div>
+      </div>
+    
+      <!-- Tarjetas por Participante -->
+      <h3 class="text-primary mt-5"><i class="bi bi-person-badge"></i> Tareas por Participante</h3>
+      <div class="row">
+        {% for participant in participants %}
+        <div class="col-md-4">
+          <div class="card shadow mb-4">
+            <div class="card-header bg-dark text-white">
+              <h5 class="mb-0"><i class="bi bi-person-circle"></i> {{ participant.username }}</h5>
+            </div>
+            <div class="card-body">
+              {% set user_tasks = namespace(lista=[]) %}
+              {% for t in tasks_pagination.items %}
+                {% if participant in t.participants %}
+                  {% set _ = user_tasks.lista.append(t) %}
+                {% endif %}
+              {% endfor %}
+              {% if user_tasks.lista %}
+                <ul class="list-group">
+                  {% for tarea in user_tasks.lista %}
+                  <li class="list-group-item d-flex justify-content-between align-items-center">
+                    {{ tarea.title }}
+                    <span class="badge bg-secondary">{{ tarea.status }}</span>
+                  </li>
+                  {% endfor %}
+                </ul>
+              {% else %}
+                <p class="text-muted">Sin tareas asignadas.</p>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    
+    
+  
+    <!-- Modales para Detalles -->
+    <!-- Modales para Detalles de Tareas -->
+{% for task in tasks_all %}
+<div class="modal fade" id="taskModal{{ task.id }}" tabindex="-1" aria-labelledby="taskModalLabel{{ task.id }}" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="taskModalLabel{{ task.id }}">Detalles de la Tarea #{{ task.id }}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <!-- Información General -->
+        <p><strong>Título:</strong> {{ task.title }}</p>
+        <p><strong>Descripción:</strong> {{ task.description or "Sin descripción" }}</p>
+        <p><strong>Estado:</strong> {{ task.status }}</p>
+        <p><strong>Progreso:</strong> {{ task.progress }}%</p>
+        <p><strong>Prioridad:</strong> {{ task.priority }}</p>
+        <p><strong>Categoría:</strong> {{ task.category or "Sin categoría" }}</p>
+
+        <!-- Fechas -->
+        <p><strong>Fecha de Inicio:</strong> {{ task.start_date.strftime('%Y-%m-%d') if task.start_date else "No definida" }}</p>
+        <p><strong>Fecha de Finalización:</strong> {{ task.end_date.strftime('%Y-%m-%d') if task.end_date else "No definida" }}</p>
+        <p><strong>Fecha de Entrega:</strong> {{ task.due_date.strftime('%Y-%m-%d') if task.due_date else "No definida" }}</p>
+
+        <!-- Responsable y Participantes -->
+        <p><strong>Responsable:</strong> {{ task.assigned_user.username if task.assigned_user else "No asignado" }}</p>
+        <p><strong>Participantes:</strong>
+          {% if task.participants %}
+            <ul>
+              {% for participant in task.participants %}
+              <li>{{ participant.username }}</li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            Sin participantes asignados
+          {% endif %}
+        </p>
+
+        <!-- Dependencia -->
+        <p><strong>Dependencia:</strong> 
+          {% if task.dependent_task %}
+            Tarea #{{ task.dependent_task.id }} - {{ task.dependent_task.title }}
+          {% else %}
+            Sin dependencia
+          {% endif %}
+        </p>
+
+        <!-- Historial de Progreso -->
+        <h6>Historial de Progreso:</h6>
+        {% if task.progress_history %}
+        <ul>
+          {% for history in task.progress_history %}
+          <li>{{ history.timestamp.strftime('%Y-%m-%d %H:%M') }}: {{ history.progress }}%</li>
+          {% endfor %}
+        </ul>
+        {% else %}
+        <p>Sin registros de progreso</p>
+        {% endif %}
+
+        <!-- Comentarios -->
+        <p><strong>Comentarios:</strong> {{ task.comments or "Sin comentarios" }}</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endfor %}
+</div>
+
+
+
+
+<div class="container py-4">
+  <!-- Encabezado -->
+  <div class="row align-items-center mb-4">
+    <div class="col-md-6">
+      <h1 class="text-primary"><i class="bi bi-terminal"></i>Responsable</h1>
+    </div>
+
+
+<div class="container">
+  <div class="row">
+    {% for responsible, tasks in tasks_by_responsible.items() %}
+    <div class="col-md-6 col-lg-4 mb-4">
+      <div class="card shadow">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+          <h5 class="mb-0">
+            <i class="bi bi-person-circle"></i> {{ responsible }}
+          </h5>
+          <span class="badge bg-light text-dark">{{ tasks|length }} tareas</span>
+        </div>
+        <div class="card-body">
+          {% for task in tasks %}
+          <div class="card mb-3">
+            <div class="card-body">
+              <h6 class="card-title text-truncate">
+                <i class="bi bi-card-text"></i> {{ task.title }}
+              </h6>
+              <p class="mb-1">
+                <strong>Progreso:</strong>
+                {{ task.progress }}%
+              </p>
+              <p class="mb-1">
+                <strong>Estado:</strong> 
+                <span class="badge 
+                  {% if task.status == 'Pendiente' %}bg-warning
+                  {% elif task.status == 'En curso' %}bg-info
+                  {% else %}bg-success{% endif %}">
+                  {{ task.status }}
+                </span>
+              </p>
+              <p class="mb-1">
+                <strong>Categoría:</strong> {{ task.category or "Sin categoría" }}
+              </p>
+              <p class="mb-1">
+                <strong>Prioridad:</strong> 
+                <span class="badge 
+                  {% if task.priority == 'Alta' %}bg-danger
+                  {% elif task.priority == 'Media' %}bg-primary
+                  {% else %}bg-secondary{% endif %}">
+                  {{ task.priority }}
+                </span>
+              </p>
+              <div class="d-flex justify-content-between mt-3">
+                <a href="{{ url_for('tasks.edit_task', task_id=task.id) }}" class="btn btn-sm btn-warning">
+                  <i class="bi bi-pencil-square"></i> Editar
+                </a>
+                <form action="{{ url_for('tasks.delete_task', task_id=task.id) }}" method="POST" style="display:inline;">
+                  <button type="submit" class="btn btn-sm btn-danger">
+                    <i class="bi bi-trash"></i> Borrar
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<div class="container py-4">
+  <!-- Encabezado -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="text-primary"><i class="bi bi-clipboard-data"></i> Dashboard de Tareas </h1>
+    <a href="{{ url_for('tasks.new_task') }}" class="btn btn-success">
+      <i class="bi bi-plus-circle"></i> Nueva Tarea
+    </a>
+  </div>
+
+  <!-- Gráficos -->
+  <div class="row mb-4">
+    <!-- Gráfico de Estados -->
+    <div class="col-md-6">
+      <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+          <h5><i class="bi bi-pie-chart"></i> Distribución por Estado</h5>
+        </div>
+        <div class="card-body">
+          <canvas id="tasksStatusChart"></canvas>
+        </div>
+      </div>
+    </div>
+    <!-- Gráfico de Prioridades -->
+    <div class="col-md-6">
+      <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+          <h5><i class="bi bi-bar-chart"></i>Tareas por Prioridad</h5>
+        </div>
+        <div class="card-body">
+          <canvas id="tasksPriorityChart"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    {% for task in tasks_pagination.items %}
+    <div class="col-md-6 col-lg-4 mb-4">
+      <div class="card shadow">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+          <h5 class="mb-0">
+            <i class="bi bi-person-circle"></i> {{ task.assigned_user.username if task.assigned_user else "No asignado" }}
+          </h5>
+          <span class="badge bg-light text-dark">Tarea #{{ task.id }}</span>
+        </div>
+        <div class="card-body">
+          <h6 class="card-title text-truncate">
+            <i class="bi bi-card-text"></i> {{ task.title }}
+          </h6>
+          <p><strong>Progreso:</strong> {{ task.progress }}%</p>
+          <p><strong>Estado:</strong> 
+            <span class="badge 
+              {% if task.status == 'Pendiente' %}bg-warning
+              {% elif task.status == 'En curso' %}bg-info
+              {% else %}bg-success{% endif %}">
+              {{ task.status }}
+            </span>
+          </p>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- Paginador -->
+<nav aria-label="Paginación">
+  <ul class="pagination justify-content-center">
+    {% if tasks_pagination.has_prev %}
+      <li class="page-item">
+        <a class="page-link" href="?page={{ tasks_pagination.prev_num }}" aria-label="Anterior">
+          <span aria-hidden="true">&laquo;</span>
+        </a>
+      </li>
+    {% endif %}
+
+    {% for num in tasks_pagination.iter_pages() %}
+      {% if num %}
+        <li class="page-item {% if num == tasks_pagination.page %}active{% endif %}">
+          <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+        </li>
+      {% else %}
+        <li class="page-item disabled"><span class="page-link">…</span></li>
+      {% endif %}
+    {% endfor %}
+
+    {% if tasks_pagination.has_next %}
+      <li class="page-item">
+        <a class="page-link" href="?page={{ tasks_pagination.next_num }}" aria-label="Siguiente">
+          <span aria-hidden="true">&raquo;</span>
+        </a>
+      </li>
+    {% endif %}
+  </ul>
+</nav>
+
+
+
+<div class="container py-4">
+  <!-- Encabezado -->
+  <div class="row align-items-center mb-4">
+    <div class="col-md-6">
+      <h1 class="text-primary"><i class="bi bi-clipboard-data"></i> Bitácora de Actividades</h1>
+    </div>
+    <div class="col-md-3">
+      <div class="card bg-primary text-white text-center">
+        <div class="card-body p-2">
+          <h6>Total de Tareas</h6>
+          <h4 class="mb-0">{{ tasks_all|length }}</h4>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3 text-end">
+      <h5 id="clock" class="text-muted mb-0"></h5>
+    </div>
+  </div>
+
+  <!-- Tarjetas por Tarea Individual -->
+  <div class="row mb-4">
+    {% for task in tasks_all %}
+    <div class="col-md-4">
+      <div class="card shadow">
+        <div class="card-header bg-info text-white">
+          <h5 class="mb-0">{{ task.title }}</h5>
+        </div>
+        <div class="card-body">
+          <p><strong>Estado:</strong> <span class="badge bg-{{ 'warning' if task.status == 'Pendiente' else 'info' if task.status == 'En curso' else 'success' }}">{{ task.status }}</span></p>
+          <p><strong>Progreso:</strong> {{ task.progress }}%</p>
+          <p><strong>Prioridad:</strong> <span class="badge bg-{{ 'danger' if task.priority == 'Alta' else 'primary' if task.priority == 'Media' else 'secondary' }}">{{ task.priority }}</span></p>
+          <p><strong>Participantes:</strong></p>
+          {% if task.participants %}
+            <ul>
+              {% for p in task.participants %}<li>{{ p.username }}</li>{% endfor %}
+            </ul>
+          {% else %}
+            <p class="text-muted">Sin participantes</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+
+
+<!-- Script para el Reloj -->
+<script>
+  function updateClock() {
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('es-ES', {
+      weekday: 'long', 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric'
+    });
+    const timeStr = now.toLocaleTimeString('es-ES');
+    document.getElementById("clock").textContent = dateStr + ' - ' + timeStr;
+  }
+  setInterval(updateClock, 1000);
+  updateClock();
+</script>
+
+
+<script>
+document.querySelectorAll(".form-select").forEach(select => {
+  select.addEventListener("change", () => {
+    const params = new URLSearchParams(window.location.search);
+    params.set(select.name, select.value);
+    window.location.search = params.toString();
+  });
+});
+</script>
+
+<!-- Script para Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  // Gráfico de Torta: Distribución por Estado
+  const ctx1 = document.getElementById('tasksStatusChart').getContext('2d');
+  const tasksStatusChart = new Chart(ctx1, {
+    type: 'pie',
+    data: {
+      labels: ['Pendientes', 'En Curso', 'Finalizadas'], // Etiquetas de los datos
+      datasets: [{
+        data: [
+            "{{ pending_tasks }}", 
+            "{{ in_progress_tasks }}", 
+            "{{ completed_tasks }}"
+          ],
+          
+        backgroundColor: ['#ffc107', '#17a2b8', '#28a745'] // Colores para cada estado
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          position: 'top' // Posición de la leyenda
+        }
+      }
+    }
+  });
+
+  // Gráfico de Barras: Tareas por Prioridad
+  const ctx2 = document.getElementById('tasksPriorityChart').getContext('2d');
+  const tasksPriorityChart = new Chart(ctx2, {
+    type: 'bar',
+    data: {
+      labels: ['Alta', 'Media', 'Baja'], // Etiquetas de prioridad
+      datasets: [{
+        label: 'Tareas por Prioridad',
+        data: [
+  "{{ pending_tasks }}", 
+  "{{ in_progress_tasks }}", 
+  "{{ completed_tasks }}"
+],
+
+        backgroundColor: ['#dc3545', '#007bff', '#6c757d'] // Colores para cada prioridad
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          display: false // Oculta la leyenda en gráficos de barras
+        }
+      },
+      scales: {
+        x: {
+          beginAtZero: true // Eje X comienza en 0
+        },
+        y: {
+          beginAtZero: true // Eje Y comienza en 0
+        }
+      }
+    }
+  });
+</script>
+
+
+
+
+
+{% endblock %}

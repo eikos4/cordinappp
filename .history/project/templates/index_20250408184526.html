@@ -1,0 +1,59 @@
+
+
+
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ <!-- Resumen Rápido -->
+ <div class="row my-4">
+  <div class="col-md-3">
+    <div class="card bg-primary text-white text-center">
+      <div class="card-body">
+        <h4>Total Tareas</h4>
+        <h2>{{ tasks_all|length }}</h2>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card bg-warning text-dark text-center">
+      <div class="card-body">
+        <h4>Tareas Pendientes</h4>
+        <h2>{{ tasks_all|selectattr("status", "equalto", "Pendiente")|list|length }}</h2>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card bg-info text-white text-center">
+      <div class="card-body">
+        <h4>Tareas En Curso</h4>
+        <h2>{{ tasks_all|selectattr("status", "equalto", "En curso")|list|length }}</h2>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card bg-success text-white text-center">
+      <div class="card-body">
+        <h4>Tareas Finalizadas</h4>
+        <h2>{{ tasks_all|selectattr("status", "equalto", "Finalizada")|list|length }}</h2>
+      </div>
+    </div>
+  </div>
+</div>
