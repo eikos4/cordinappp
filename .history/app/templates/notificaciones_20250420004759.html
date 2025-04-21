@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2 class="text-2xl font-bold mb-6">Mis Notificaciones</h2>
+
+<ul class="space-y-4">
+    {% for n in notifications %}
+
+        {% set icon = "🔔" %}
+        {% set bg = "bg-gray-100 border-gray-300 text-gray-700" %}
+        
+        {% if "registró" in n.message %}
+            {% set icon = "⏱️" %}
+            {% set bg = "bg-yellow-50 border-yellow-400 text-yellow-800" %}
+        {% elif "actualizó el progreso" in n.message %}
+            {% set icon = "📈" %}
+            {% set bg = "bg-blue-50 border-blue-400 text-blue-800" %}
+        {% elif "cambió de estado" in n.message %}
+            {% set icon = "🔄" %}
+            {% set bg = "bg-green-50 border-green-400 text-green-800" %}
+        {% endif %}
+
+        <li class="p-4 rounded border-l-4 {{ bg }}">
+            <div class="flex items-start gap-2">
+                <span class="text-lg">{{ icon }}</span>
+                <div>
+                    <p class="text-sm font-medium">{{ n.message }}</p>
+                    <p class="text-xs text-gray-500">{{ n.timestamp.strftime('%d/%m/%Y %H:%M') }}</p>
+                </div>
+            </div>
+        </li>
+
+    {% else %}
+        <p class="text-gray-600">No tienes notificaciones.</p>
+    {% endfor %}
+</ul>
+{% endblock %}

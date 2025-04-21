@@ -1,0 +1,46 @@
+
+{% extends 'base.html' %}
+{% block content %}
+
+<h2 class="text-3xl font-bold mb-6 text-corporativo-morado text-center">🔔 Notificaciones</h2>
+
+<div class="space-y-4">
+    {% if notifications %}
+        {% for n in notifications if not n.is_read %}
+        <div class="flex items-start gap-3 bg-corporativo-fondo p-4 border-l-4 rounded shadow-sm
+            {% if 'registró' in n.message %} border-purple-600
+            {% elif 'progreso' in n.message %} border-green-600
+            {% elif 'estado' in n.message %} border-yellow-500
+            {% else %} border-blue-500 {% endif %}">
+            
+            <svg class="w-5 h-5 mt-1 text-corporativo-morado" fill="none" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405M19.595 13.595A7.963 7.963 0 0021 10a8 8 0 10-8 8 7.963 7.963 0 003.595-.905z"/>
+            </svg>
+
+            <div class="flex-1">
+                <p class="text-sm text-gray-800">{{ n.message }}</p>
+                <p class="text-xs text-gray-500">{{ n.timestamp.strftime('%d/%m/%Y %H:%M') }}</p>
+                <form method="POST" action="{{ url_for('marcar_leida', notification_id=n.id) }}" class="mt-2">
+                    <button type="submit" class="text-xs text-white bg-corporativo-azul px-3 py-1 rounded hover:bg-corporativo-morado transition">Marcar como leída</button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+
+        <hr class="my-6">
+
+        <h3 class="text-lg font-semibold text-gray-600">📥 Leídas</h3>
+
+        {% for n in notifications if n.is_read %}
+        <div class="bg-gray-100 p-4 rounded shadow-sm border-l-4 border-gray-400">
+            <p class="text-sm text-gray-700">{{ n.message }}</p>
+            <p class="text-xs text-gray-500">{{ n.timestamp.strftime('%d/%m/%Y %H:%M') }}</p>
+        </div>
+        {% endfor %}
+
+    {% else %}
+        <p class="text-gray-500 text-center">No hay notificaciones.</p>
+    {% endif %}
+</div>
+
+{% endblock %}

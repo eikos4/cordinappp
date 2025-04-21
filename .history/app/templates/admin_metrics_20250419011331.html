@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2 class="text-2xl font-bold mb-6">Métricas Generales del Sistema</h2>
+
+<!-- Usuarios por rol -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+    <div class="bg-white p-4 shadow rounded text-center">
+        <h3 class="text-lg font-semibold">Administradores</h3>
+        <p class="text-2xl">{{ role_counts.admin }}</p>
+    </div>
+    <div class="bg-white p-4 shadow rounded text-center">
+        <h3 class="text-lg font-semibold">Líderes</h3>
+        <p class="text-2xl">{{ role_counts.leader }}</p>
+    </div>
+    <div class="bg-white p-4 shadow rounded text-center">
+        <h3 class="text-lg font-semibold">Colaboradores</h3>
+        <p class="text-2xl">{{ role_counts.participant }}</p>
+    </div>
+</div>
+
+<!-- Horas por usuario -->
+<div class="bg-white p-4 shadow rounded mb-6">
+    <h3 class="text-xl font-bold mb-4">Horas por Usuario</h3>
+    <ul>
+        {% for user, hours in user_hours.items() %}
+        <li class="border-b py-2">{{ user }} — <strong>{{ hours }}</strong> horas</li>
+        {% endfor %}
+    </ul>
+</div>
+
+<!-- Horas por proyecto -->
+<div class="bg-white p-4 shadow rounded">
+    <h3 class="text-xl font-bold mb-4">Horas por Proyecto</h3>
+    <ul>
+        {% for project, hours in project_hours.items() %}
+        <li class="border-b py-2">{{ project }} — <strong>{{ hours }}</strong> horas</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

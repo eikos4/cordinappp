@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Project Tracker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-800 font-sans">
+    <header class="bg-indigo-600 text-white p-4 text-center text-xl">
+        Project Tracker
+    </header>
+
+    <main class="p-6">
+        {% block content %}{% endblock %}
+    </main>
+
+    <a href="{{ url_for('user_profile') }}" class="inline-block bg-gray-700 text-white px-4 py-2 rounded mt-6">Ver perfil</a>
+
+</body>
+</html>

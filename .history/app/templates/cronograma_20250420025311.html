@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h2 class="text-3xl font-bold mb-6 text-corporativo-morado text-center">📊 Cronograma de Proyectos</h2>
+
+<div class="space-y-6">
+    {% for project in projects %}
+    <div class="bg-white p-4 shadow-sm rounded border border-gray-200">
+        <!-- Cabecera -->
+        <div class="flex justify-between items-center text-sm mb-2">
+            <div class="flex items-center gap-2">
+                <svg class="w-4 h-4 text-corporativo-naranjo" fill="none" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-3-3v6m5 2a9 9 0 11-10 0 9 9 0 0110 0z" />
+                </svg>
+                <span class="font-semibold text-corporativo-azul">{{ project.name }}</span>
+            </div>
+
+            <!-- Estado como badge -->
+            <span class="text-xs font-medium px-2 py-1 rounded-full capitalize
+                {% if project.status == 'activo' %} bg-green-100 text-green-800
+                {% elif project.status == 'suspendido' %} bg-red-100 text-red-800
+                {% elif project.status == 'finalizado' %} bg-blue-100 text-blue-800
+                {% else %} bg-yellow-100 text-yellow-800 {% endif %}">
+                {{ project.status }}
+            </span>
+        </div>
+
+        <!-- Fechas -->
+        <div class="text-xs text-gray-500 mb-1">
+            Inicio: {{ project.start_date }} | Fin: {{ project.end_date }}
+        </div>
+
+        <!-- Barra de duración -->
+        <div class="relative bg-gray-200 rounded-full h-5">
+            <div
+                class="absolute top-0 h-5 rounded-full text-white text-xs flex items-center justify-center overflow-hidden"
+                style="left: {{ project.days_offset }}%; width: {{ project.duration_percent }}%; background-color: #5c02a2;"
+                title="Duración: {{ project.duration_percent|round(1) }}%">
+                {{ project.progress }}%
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock %}

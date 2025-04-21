@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Project Tracker</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        corporativo: {
+                            fondo: '#f2f2f2',
+                            morado: '#5c02a2',
+                            azul: '#0b1738',
+                            naranjo: '#f1680d',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+</head>
+<body class="bg-gray-100 text-gray-800 min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-corporativo-azul text-white px-6 py-4 flex flex-col md:flex-row justify-between items-center">
+
+        <h1 class="text-2xl font-bold mb-2 md:mb-0">Project Tracker</h1>
+        
+        {% if current_user.is_authenticated %}
+        <div class="flex items-center gap-4 text-sm">
+            <span>Hola, {{ current_user.name }}</span>
+
+            <!-- Notificaciones -->
+            <a href="{{ url_for('notificaciones') }}" class="relative hover:underline">
+                🔔 Notificaciones
+                {% set unread = current_user.notifications|selectattr("is_read", "equalto", False)|list|length %}
+                {% if unread > 0 %}
+                <span class="absolute -top-2 -right-4 bg-red-600 text-white text-xs font-bold rounded-full px-2 py-0.5 shadow">
+                    {{ unread }}
+                </span>
+                {% endif %}
+            </a>
+
+            <!-- Logout -->
+            <a href="{{ url_for('logout') }}" class="hover:underline">Cerrar sesión</a>
+        </div>
+        {% endif %}
+    </header>
+
+    <!-- Navegación -->
+    {% if current_user.is_authenticated %}
+    <nav class="bg-white shadow px-6 py-3 flex flex-wrap gap-4 text-sm border-b border-corporativo-fondo">
+
+        {% if current_user.role == 'admin' %}
+        <a href="{{ url_for('dashboard') }}" class="text-corporativo-morado hover:underline">Dashboard</a>
+            <a href="{{ url_for('show_projects') }}" class="text-blue-700 hover:underline">Proyectos</a>
+            <a href="{{ url_for('create_project') }}" class="text-blue-700 hover:underline">Crear Proyecto</a>
+            <a href="{{ url_for('assign_user') }}" class="text-blue-700 hover:underline">Asignar Usuarios</a>
+            <a href="{{ url_for('admin_metrics') }}" class="text-blue-700 hover:underline">Métricas</a>
+        {% elif current_user.role == 'leader' %}
+            <a href="{{ url_for('dashboard') }}" class="text-green-700 hover:underline">Dashboard</a>
+            <a href="{{ url_for('assign_user') }}" class="text-green-700 hover:underline">Asignar Usuarios</a>
+            <a href="{{ url_for('project_hours_summary') }}" class="text-green-700 hover:underline">Resumen de Horas</a>
+            <a href="{{ url_for('update_project_progress') }}" class="text-green-700 hover:underline">Actualizar Progreso</a>
+        {% elif current_user.role == 'participant' %}
+            <a href="{{ url_for('dashboard') }}" class="text-purple-700 hover:underline">Dashboard</a>
+            <a href="{{ url_for('log_hours') }}" class="text-purple-700 hover:underline">Registrar Horas</a>
+        {% endif %}
+
+        <a href="{{ url_for('user_profile') }}" class="text-gray-700 hover:underline">Mi Perfil</a>
+    </nav>
+    {% endif %}
+
+    <!-- Contenido principal -->
+    <main class="flex-1 p-6">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 px-4 py-3 rounded mb-4">
+                    {% for message in messages %}
+                        <p>{{ message }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+</body>
+</html>

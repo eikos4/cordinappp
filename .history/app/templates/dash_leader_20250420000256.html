@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2 class="text-2xl font-bold mb-4">Dashboard Líder</h2>
+
+<p>Proyectos a tu cargo:</p>
+
+
+<div class="grid gap-4 mt-4">
+    {% for project in projects %}
+    <div class="bg-white p-4 shadow rounded">
+        <h3 class="text-lg font-semibold">{{ project.name }}</h3>
+        <p>Progreso: {{ project.progress }}%</p>
+        <p>Desde: {{ project.start_date }} hasta {{ project.end_date }}</p>
+    </div>
+    {% else %}
+    <p>No tienes proyectos asignados aún.</p>
+    {% endfor %}
+</div>
+
+<a href="{{ url_for('project_hours_summary') }}" class="inline-block bg-indigo-600 text-white px-4 py-2 rounded mt-4">Ver horas por proyecto</a>
+
+
+<a href="{{ url_for('update_project_progress') }}" class="inline-block bg-blue-600 text-white px-4 py-2 rounded mt-4">Actualizar progreso</a>
+
+{% endblock %}

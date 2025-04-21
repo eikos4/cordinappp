@@ -1,0 +1,95 @@
+
+/* Project Tracker - Paleta de Colores Corporativos Mejorada */
+
+:root {
+    --color-fondo: #f2f2f2;
+    --color-morado: #5c02a2;
+    --color-azul: #0b1738;
+    --color-naranjo: #f1680d;
+    --color-blanco: #ffffff;
+}
+
+body {
+    background-color: var(--color-fondo);
+    color: var(--color-azul);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+header {
+    background-color: var(--color-azul);
+    color: white;
+}
+
+nav a {
+    color: var(--color-morado);
+    text-decoration: none;
+}
+
+nav a:hover {
+    color: var(--color-naranjo);
+}
+
+/* General UI Cards and Sections */
+.card, .section {
+    background-color: var(--color-blanco);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    margin-bottom: 1rem;
+}
+
+/* Botones */
+button, .btn {
+    background-color: var(--color-morado);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+button:hover, .btn:hover {
+    background-color: var(--color-naranjo);
+    transform: scale(1.02);
+}
+
+button:focus, .btn:focus {
+    outline: 2px solid var(--color-naranjo);
+    outline-offset: 2px;
+}
+
+/* Utilidades para fondos */
+.bg-fondo {
+    background-color: var(--color-fondo);
+}
+
+.bg-morado {
+    background-color: var(--color-morado);
+    color: white;
+}
+
+.bg-naranjo {
+    background-color: var(--color-naranjo);
+    color: white;
+}
+
+.bg-azul {
+    background-color: var(--color-azul);
+    color: white;
+}
+
+.text-morado {
+    color: var(--color-morado);
+}
+
+.text-azul {
+    color: var(--color-azul);
+}
+
+.text-naranjo {
+    color: var(--color-naranjo);
+}
+
+
+

@@ -1,0 +1,24 @@
+
+{% extends 'base.html' %}
+{% block content %}
+<h2 class="text-2xl font-bold mb-6">Bitácora del Proyecto: {{ project.name }}</h2>
+
+<div class="space-y-4">
+    {% for log in registros %}
+    <div class="border-l-4 pl-4 py-2 {% if log.tipo_evento == 'comentario' %}border-blue-400{% elif log.tipo_evento == 'archivo' %}border-yellow-400{% else %}border-green-400{% endif %} bg-white shadow rounded">
+        <p class="text-sm text-gray-600"><strong>{{ log.author.name }}</strong> - {{ log.timestamp.strftime('%d/%m/%Y %H:%M') }}</p>
+        <p class="text-sm">{{ log.descripcion }}</p>
+
+        {% if log.archivo_adjunto %}
+        <a href="{{ log.archivo_adjunto }}" target="_blank" class="inline-block mt-2 text-sm text-blue-600 hover:underline">
+            📎 Ver archivo adjunto
+        </a>
+        {% endif %}
+
+        <span class="inline-block mt-2 text-xs bg-gray-200 px-2 py-1 rounded">{{ log.tipo_evento }}</span>
+    </div>
+    {% else %}
+    <p class="text-gray-500">No hay registros aún.</p>
+    {% endfor %}
+</div>
+{% endblock %}

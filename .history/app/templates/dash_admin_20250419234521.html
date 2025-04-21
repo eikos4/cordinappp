@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2 class="text-2xl font-bold mb-4">Dashboard Administrador</h2>
+
+<div class="grid grid-cols-2 gap-4">
+    <div class="bg-white p-4 shadow rounded">
+        <h3 class="text-lg font-bold mb-2">Usuarios Registrados</h3>
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-100">
+                    <tr>
+                        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-700">Nombre</th>
+                        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-700">Rol</th>
+                        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-700">Correo</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100">
+                    {% for user in users %}
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-4 py-2 text-sm">{{ user.name }}</td>
+                        <td class="px-4 py-2 text-sm capitalize">{{ user.role }}</td>
+                        <td class="px-4 py-2 text-sm">{{ user.email }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+
+    <div class="bg-white p-4 shadow rounded">
+        <h3 class="text-lg font-bold mb-2">Proyectos Totales</h3>
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-100">
+                    <tr>
+                        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-700">Nombre</th>
+                        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-700">Progreso</th>
+                        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-700">Fecha Inicio</th>
+                        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-700">Fecha Fin</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100">
+                    {% for project in projects %}
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-4 py-2 text-sm">{{ project.name }}</td>
+                        <td class="px-4 py-2 text-sm">{{ project.progress }}%</td>
+                        <td class="px-4 py-2 text-sm">{{ project.start_date }}</td>
+                        <td class="px-4 py-2 text-sm">{{ project.end_date }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-4 mt-4">
+        {% for project in projects %}
+        <div class="bg-white shadow-md rounded-lg p-4">
+            <h4 class="text-lg font-semibold text-corporativo-morado">{{ project.name }}</h4>
+            <p class="text-sm text-gray-600 mb-2">Progreso: {{ project.progress }}%</p>
+            <p class="text-xs text-gray-500">Inicio: {{ project.start_date }} | Fin: {{ project.end_date }}</p>
+        </div>
+        {% else %}
+        <p class="text-sm text-gray-600">No hay proyectos registrados.</p>
+        {% endfor %}
+    </div>
+    
+
+    <div class="w-full bg-gray-200 rounded-full h-2 mt-1">
+        <div class="bg-corporativo-naranjo h-2 rounded-full" style="width: {{ project.progress }}%;"></div>
+      </div>
+      
+
+
+
+
+</div>
+
+
+<a href="{{ url_for('admin_metrics') }}" class="inline-block bg-green-600 text-white px-4 py-2 rounded mt-4">Ver métricas del sistema</a>
+
+{% endblock %}

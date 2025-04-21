@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block content %}
+<!-- FullCalendar CSS -->
+<link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css' rel='stylesheet' />
+
+<!-- FullCalendar JS -->
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.js'></script>
+
+
+<h2 class="text-2xl font-bold mb-4">📅 Calendario de Proyectos</h2>
+
+<div id='calendar'></div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var calendarEl = document.getElementById('calendar');
+
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            locale: 'es',
+            height: 'auto',
+            events: {{ events|tojson }}
+        });
+
+        calendar.render();
+    });
+</script>
+
+<style>
+    #calendar {
+        max-width: 100%;
+        margin: 0 auto;
+        background-color: white;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    }
+</style>
+
+{% endblock %}

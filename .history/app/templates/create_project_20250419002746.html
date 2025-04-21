@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2 class="text-2xl font-bold mb-4">Crear Nuevo Proyecto</h2>
+
+<form method="POST" class="bg-white p-6 rounded shadow-md space-y-4 max-w-lg">
+    {{ form.hidden_tag() }}
+    <div>
+        {{ form.name.label(class="block text-gray-700 font-medium") }}
+        {{ form.name(class="w-full border border-gray-300 rounded p-2") }}
+    </div>
+    <div>
+        {{ form.description.label(class="block text-gray-700 font-medium") }}
+        {{ form.description(class="w-full border border-gray-300 rounded p-2") }}
+    </div>
+    <div>
+        {{ form.start_date.label(class="block text-gray-700 font-medium") }}
+        {{ form.start_date(class="w-full border border-gray-300 rounded p-2") }}
+    </div>
+    <div>
+        {{ form.end_date.label(class="block text-gray-700 font-medium") }}
+        {{ form.end_date(class="w-full border border-gray-300 rounded p-2") }}
+    </div>
+    <div>
+        {{ form.submit(class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700") }}
+    </div>
+</form>
+{% endblock %}

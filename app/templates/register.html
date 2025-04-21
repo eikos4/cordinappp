@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="max-w-md mx-auto bg-white p-6 rounded shadow">
+    <h2 class="text-xl font-bold mb-4">Registro de Usuario</h2>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        <div class="mb-4">{{ form.name.label }} {{ form.name(class="w-full border p-2 rounded") }}</div>
+        <div class="mb-4">{{ form.email.label }} {{ form.email(class="w-full border p-2 rounded") }}</div>
+        <div class="mb-4">{{ form.password.label }} {{ form.password(class="w-full border p-2 rounded") }}</div>
+        <div class="mb-4">{{ form.confirm_password.label }} {{ form.confirm_password(class="w-full border p-2 rounded") }}</div>
+        <div class="mb-4">{{ form.role.label }} {{ form.role(class="w-full border p-2 rounded") }}</div>
+        {{ form.submit(class="w-full bg-green-600 text-white p-2 rounded") }}
+    </form>
+</div>
+{% endblock %}

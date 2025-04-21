@@ -1,0 +1,46 @@
+
+{% extends 'base.html' %}
+{% block content %}
+
+<h2 class="text-2xl font-bold mb-6">Bitácora del Proyecto: {{ project.name }}</h2>
+
+<div class="relative border-l-2 border-corporativo-morado ml-4">
+
+    <!-- Inicio del proyecto -->
+    <div class="mb-6 ml-4">
+        <div class="absolute -left-3 top-0 w-6 h-6 bg-green-500 rounded-full border-2 border-white shadow"></div>
+        <p class="text-sm text-gray-700 font-semibold">🟢 Inicio del Proyecto</p>
+        <p class="text-xs text-gray-500">{{ project.start_date.strftime('%d/%m/%Y') }}</p>
+    </div>
+
+    {% for log in registros %}
+    <div class="mb-6 ml-4 relative">
+        <div class="absolute -left-3 top-1 w-6 h-6 {% if log.tipo_evento == 'comentario' %}bg-blue-400{% elif log.tipo_evento == 'archivo' %}bg-yellow-400{% else %}bg-green-500{% endif %} rounded-full border-2 border-white shadow"></div>
+        <div class="bg-white p-4 rounded shadow border border-gray-200">
+            <div class="flex justify-between items-center">
+                <p class="text-sm text-gray-800 font-semibold">{{ log.author.name }}</p>
+                <span class="text-xs text-gray-500">{{ log.timestamp.strftime('%d/%m/%Y %H:%M') }}</span>
+            </div>
+            <p class="text-sm mt-1">{{ log.descripcion }}</p>
+
+            {% if log.archivo_adjunto %}
+            <a href="{{ log.archivo_adjunto }}" target="_blank" class="inline-block mt-2 text-sm text-blue-600 hover:underline">
+                📎 Ver archivo adjunto
+            </a>
+            {% endif %}
+
+            <span class="inline-block mt-2 text-xs bg-gray-200 px-2 py-1 rounded">{{ log.tipo_evento }}</span>
+        </div>
+    </div>
+    {% endfor %}
+
+    <!-- Fin del proyecto -->
+    <div class="mb-6 ml-4">
+        <div class="absolute -left-3 w-6 h-6 bg-red-500 rounded-full border-2 border-white shadow"></div>
+        <p class="text-sm text-gray-700 font-semibold">🔴 Fin del Proyecto</p>
+        <p class="text-xs text-gray-500">{{ project.end_date.strftime('%d/%m/%Y') }}</p>
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2 class="text-2xl font-bold mb-4">Dashboard Líder</h2>
+
+<p>Proyectos a tu cargo:</p>
+
+
+
+
+
+
+
+
+
+
+<a href="{{ url_for('project_hours_summary') }}" class="inline-block bg-indigo-600 text-white px-4 py-2 rounded mt-4">Ver horas por proyecto</a>
+
+
+<a href="{{ url_for('update_project_progress') }}" class="inline-block bg-blue-600 text-white px-4 py-2 rounded mt-4">Actualizar progreso</a>
+
+{% endblock %}

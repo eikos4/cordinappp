@@ -1,0 +1,55 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Calendario Test</title>
+    <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css' rel='stylesheet' />
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.js'></script>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 40px auto;
+            max-width: 900px;
+            padding: 0 10px;
+        }
+
+        #calendar {
+            max-width: 100%;
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+        }
+
+        .fc .fc-toolbar-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #5c02a2;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Test de FullCalendar</h1>
+    <div id='calendar'></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var calendarEl = document.getElementById('calendar');
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                locale: 'es',
+                events: [
+                    {
+                        title: 'Evento de prueba',
+                        start: '2025-04-20',
+                        end: '2025-04-23',
+                        color: '#5c02a2'
+                    }
+                ]
+            });
+            calendar.render();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2 class="text-2xl font-bold mb-4">Dashboard Administrador</h2>
+
+<div class="grid grid-cols-2 gap-4">
+    <div class="bg-white p-4 shadow rounded">
+        <h3 class="font-bold">Usuarios Registrados</h3>
+        <ul>
+            {% for user in users %}
+                <li>{{ user.name }} ({{ user.role }})</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div class="bg-white p-4 shadow rounded">
+        <h3 class="font-bold">Proyectos Totales</h3>
+        <ul>
+            {% for project in projects %}
+                <li>{{ project.name }} - Progreso: {{ project.progress }}%</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+
+
+
+{% endblock %}

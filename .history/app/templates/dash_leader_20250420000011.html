@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2 class="text-2xl font-bold mb-4">Dashboard Líder</h2>
+
+<p>Proyectos a tu cargo:</p>
+
+<div class="bg-white shadow-md rounded-lg p-4">
+    <h4 class="text-lg font-semibold text-corporativo-morado">{{ project.name }}</h4>
+
+    <!-- Progreso -->
+    <p class="text-sm text-gray-600">Progreso: {{ project.progress }}%</p>
+    <div class="w-full bg-gray-200 rounded-full h-2 mt-1 mb-2">
+        <div class="bg-corporativo-naranjo h-2 rounded-full" style="width: {{ project.progress }}%;"></div>
+    </div>
+
+    <!-- Fechas -->
+    <p class="text-xs text-gray-500 mb-1">
+        Inicio: {{ project.start_date }} <br>
+        Fin: {{ project.end_date }}
+    </p>
+
+    <!-- Estado del proyecto -->
+    <p class="text-sm font-semibold text-corporativo-azul mt-2">
+        Estado: <span class="capitalize">{{ project.status }}</span>
+    </p>
+
+    <!-- Comentario del administrador -->
+    {% if project.admin_comment %}
+    <div class="bg-yellow-50 border-l-4 border-yellow-400 text-yellow-800 px-3 py-2 mt-2 rounded text-sm">
+        <strong>Comentario del Administrador:</strong><br>
+        {{ project.admin_comment }}
+    </div>
+    {% endif %}
+</div>
+
+
+
+
+
+
+
+<div class="grid gap-4 mt-4">
+    {% for project in projects %}
+    <div class="bg-white p-4 shadow rounded">
+        <h3 class="text-lg font-semibold">{{ project.name }}</h3>
+        <p>Progreso: {{ project.progress }}%</p>
+        <p>Desde: {{ project.start_date }} hasta {{ project.end_date }}</p>
+    </div>
+    {% else %}
+    <p>No tienes proyectos asignados aún.</p>
+    {% endfor %}
+</div>
+
+<a href="{{ url_for('project_hours_summary') }}" class="inline-block bg-indigo-600 text-white px-4 py-2 rounded mt-4">Ver horas por proyecto</a>
+
+
+<a href="{{ url_for('update_project_progress') }}" class="inline-block bg-blue-600 text-white px-4 py-2 rounded mt-4">Actualizar progreso</a>
+
+{% endblock %}
