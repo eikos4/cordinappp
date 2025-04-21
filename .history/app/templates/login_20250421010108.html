@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<!-- Fondo completo -->
+<div class="min-h-screen bg-cover bg-center flex items-center justify-center px-4 py-12"
+     style="background-image: url('{{ url_for('static', filename='images/bg-login.png') }}');">
+
+    <div class="w-full max-w-md">
+
+        <!-- Tarjeta estilo vidrio -->
+        <div class="backdrop-blur-md bg-white bg-opacity-80 shadow-xl rounded-2xl p-8 border border-gray-200">
+
+            <!-- Logo reducido y centrado -->
+            <div class="flex justify-center mb-6">
+                <img src="{{ url_for('static', filename='images/bg-login.') }}"
+                     alt="Logo" class="w-24 h-24 rounded-full shadow-md" />
+            </div>
+
+            <h2 class="text-2xl font-bold text-center text-corporativo-morado mb-2">
+                PROJECT TRACKER
+            </h2>
+
+            <p class="text-center text-sm text-gray-600 mb-4">¡Bienvenido nuevamente!</p>
+
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                        {% for message in messages %}
+                            <p>{{ message }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            <form method="POST" class="space-y-5">
+                {{ form.hidden_tag() }}
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">{{ form.email.label }}</label>
+                    {{ form.email(class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-corporativo-naranjo") }}
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">{{ form.password.label }}</label>
+                    {{ form.password(class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-corporativo-naranjo") }}
+                </div>
+
+                <div>
+                    {{ form.submit(class="w-full bg-corporativo-morado text-white py-2 rounded-lg font-semibold hover:bg-corporativo-naranjo transition") }}
+                </div>
+            </form>
+
+            <div class="text-center mt-4 text-sm text-gray-600">
+                ¿No tienes cuenta?
+                <a href="{{ url_for('register') }}" class="text-corporativo-morado hover:underline">Regístrate aquí</a>
+            </div>
+        </div>
+
+        <!-- Pie de página -->
+        <p class="text-center text-xs text-white mt-4 drop-shadow-sm">
+            © 2025 Project Tracker. Todos los derechos reservados.
+        </p>
+    </div>
+</div>
+
+{% endblock %}

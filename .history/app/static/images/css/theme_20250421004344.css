@@ -98,3 +98,12 @@ button:focus, .btn:focus {
 
 
 
+  colors: {
+    corporativo: {
+      gris: '#f2f2f2',
+      morado: '#5c02a2',
+      azul: '#0b1738',
+      naranjo: '#f1680d',
+    }
+}
+  

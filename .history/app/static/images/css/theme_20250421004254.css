@@ -97,4 +97,13 @@ button:focus, .btn:focus {
 }
 
 
+:root {
+    --corporativo-gris: #f2f2f2;
+    --corporativo-morado: #5c02a2;
+    --corporativo-azul: #0b1738;
+    --corporativo-naranjo: #f1680d;
+  }
+  
 
+
+  
