@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h2 class="text-2xl font-bold text-corporativo-morado mb-8 text-center">
+    ✏️ Editar Tarea: {{ task.name }}
+</h2>
+
+<form method="POST" class="max-w-2xl mx-auto bg-white p-6 rounded-xl shadow border border-gray-200 space-y-6">
+    {{ form.hidden_tag() }}
+
+    <!-- Título -->
+    <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Título de la tarea</label>
+        {{ form.name(class="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-corporativo-naranjo") }}
+    </div>
+
+    <!-- Descripción -->
+    <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
+        {{ form.description(class="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-corporativo-naranjo") }}
+    </div>
+
+    <!-- Horas -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Horas Estimadas</label>
+            {{ form.estimated_hours(class="w-full px-4 py-2 border border-gray-300 rounded") }}
+        </div>
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Horas Reales</label>
+            {{ form.real_hours(class="w-full px-4 py-2 border border-gray-300 rounded") }}
+        </div>
+    </div>
+
+    <!-- Fecha límite y Estado -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Fecha Límite</label>
+            {{ form.due_date(class="w-full px-4 py-2 border border-gray-300 rounded") }}
+        </div>
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Estado</label>
+            {{ form.status(class="w-full px-4 py-2 border border-gray-300 rounded") }}
+        </div>
+    </div>
+
+    <!-- Asignación -->
+    <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Asignado a</label>
+        {{ form.assigned_to_id(class="w-full px-4 py-2 border border-gray-300 rounded") }}
+    </div>
+
+    <!-- Botón -->
+    <div class="text-center pt-4">
+        {{ form.submit(class="bg-corporativo-morado text-white font-semibold px-6 py-2 rounded hover:bg-corporativo-naranjo transition") }}
+    </div>
+</form>
+
+{% endblock %}

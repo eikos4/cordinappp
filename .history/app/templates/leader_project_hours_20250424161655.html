@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h2 class="text-3xl font-bold text-corporativo-morado mb-4">📊 Resumen de Horas por Proyecto</h2>
+
+<p class="mb-6 text-sm text-gray-600">Este panel muestra el total de horas trabajadas por los usuarios asignados a cada proyecto. Puedes utilizar esta información para realizar seguimiento de avance y distribución de carga.</p>
+
+{% for item in summary %}
+<div class="bg-white shadow border border-gray-200 rounded-lg p-6 mb-8">
+    <!-- Encabezado de proyecto -->
+    <div class="flex justify-between items-center mb-4">
+        <div>
+            <h3 class="text-xl font-semibold text-corporativo-azul">{{ item.project.name }}</h3>
+            <p class="text-sm text-gray-500">
+                🗓️ {{ item.project.start_date }} → {{ item.project.end_date }}
+            </p>
+        </div>
+        <div class="text-sm">
+            <p class="text-gray-700"><strong>Progreso:</strong> {{ item.project.progress }}%</p>
+            <div class="w-40 bg-gray-200 rounded-full h-2 mt-1">
+                <div class="bg-corporativo-naranjo h-2 rounded-full" style="width: {{ item.project.progress }}%;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabla de usuarios -->
+    <div class="overflow-x-auto">
+        <table class="min-w-full text-sm divide-y divide-gray-200 border border-gray-200 rounded">
+            <thead class="bg-gray-100 text-xs font-semibold text-gray-700">
+                <tr>
+                    <th class="px-4 py-2 text-left">👤 Nombre</th>
+                    <th class="px-4 py-2 text-left">📧 Correo</th>
+                    <th class="px-4 py-2 text-left">⏱️ Horas Trabajadas</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+                {% for user in item.users %}
+                <tr class="hover:bg-gray-50">
+                    <td class="px-4 py-2">{{ user.name }}</td>
+                    <td class="px-4 py-2">{{ user.email }}</td>
+                    <td class="px-4 py-2 font-semibold text-indigo-700">{{ user.hours }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% else %}
+<p class="text-center text-gray-500">No tienes proyectos asignados.</p>
+{% endfor %}
+
+{% endblock %}

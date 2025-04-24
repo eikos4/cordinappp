@@ -1,0 +1,304 @@
+{% extends 'base.html' %}
+{% block content %}
+
+
+<h2 class="text-3xl font-bold text-center text-corporativo-morado mb-8 animate-fade-in">
+    Bitácora del Proyecto: {{ project.name }}
+</h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Filtros -->
+<div class="max-w-5xl mx-auto mb-6 flex flex-wrap gap-4 items-center justify-between text-sm">
+  <div>
+    <label for="filter-type">Filtrar por tipo:</label>
+    <select id="filter-type" class="border rounded px-2 py-1" onchange="filterTimeline()">
+      <option value="all">Todos</option>
+      <option value="comentario">Comentario</option>
+      <option value="archivo">Archivo</option>
+      <option value="estado">Estado</option>
+    </select>
+  </div>
+  <div>
+    <label for="filter-author">Filtrar por autor:</label>
+    <select id="filter-author" class="border rounded px-2 py-1" onchange="filterTimeline()">
+      <option value="all">Todos</option>
+      {% for log in registros|unique(attribute='author.name') %}
+      <option value="{{ log.author.name }}">{{ log.author.name }}</option>
+      {% endfor %}
+    </select>
+  </div>
+</div>
+
+<!-- Tabla colapsable -->
+<details class="bg-white p-6 rounded shadow mb-10 max-w-5xl mx-auto overflow-x-auto">
+  <summary class="text-xl font-semibold text-corporativo-azul cursor-pointer select-none">Resumen de Registros</summary>
+  <table class="min-w-full text-sm divide-y divide-gray-200 mt-4">
+    <thead class="bg-gray-100 text-left text-xs font-semibold text-gray-700">
+      <tr>
+        <th class="px-4 py-2">Fecha</th>
+        <th class="px-4 py-2">Autor</th>
+        <th class="px-4 py-2">Tipo</th>
+        <th class="px-4 py-2">Descripción</th>
+        <th class="px-4 py-2">Archivo</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-100">
+      {% for log in registros %}
+      <tr>
+        <td class="px-4 py-2">{{ log.timestamp.strftime('%d/%m/%Y %H:%M') }}</td>
+        <td class="px-4 py-2">{{ log.author.name }}</td>
+        <td class="px-4 py-2 capitalize">{{ log.tipo_evento }}</td>
+        <td class="px-4 py-2">{{ log.descripcion }}</td>
+        <td class="px-4 py-2">
+          {% if log.archivo_adjunto %}
+          <a href="{{ log.archivo_adjunto }}" target="_blank" class="text-blue-600 hover:underline text-xs">📎 Ver</a>
+          {% else %}—{% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</details>
+
+
+
+
+
+
+
+
+
+<h2 class="text-3xl font-bold text-center text-corporativo-morado mb-8">Cronología del Proyecto</h2>
+<!-- Botón de exportar -->
+<div class="flex justify-center mt-10">
+  <button onclick="window.print()"
+          class="inline-flex items-center gap-2 px-6 py-2 bg-corporativo-morado hover:bg-corporativo-naranjo text-white font-semibold rounded shadow-md transition">
+    🖨️ Exportar cronología
+  </button>
+</div>
+
+<section class="timeline-centered max-w-6xl mx-auto relative">
+  <div class="absolute left-1/2 top-0 bottom-0 w-1 bg-gray-300 transform -translate-x-1/2"></div>
+  
+
+
+  <!-- Inicio -->
+  <div class="timeline-entry left">
+    <div class="timeline-point bg-green-600"></div>
+    <div class="timeline-card">
+      <p class="text-sm text-gray-500">{{ project.start_date.strftime('%d/%m/%Y') }}</p>
+      <p class="font-semibold text-green-700">🟢 Inicio del proyecto</p>
+    </div>
+  </div>
+
+  {% set previous_date = project.start_date %}
+  {% for item in timeline %}
+  {% set days_diff = (item.log.timestamp.date() - previous_date).days %}
+  {% set previous_date = item.log.timestamp.date() %}
+
+  <div class="timeline-entry {% if loop.index is even %}right{% else %}left{% endif %}" style="margin-top: {{ item.margin_top }}px;" data-type="{{ item.log.tipo_evento }}" data-author="{{ item.log.author.name }}">
+    <div class="timeline-point bg-corporativo-morado"></div>
+    <div class="timeline-card animate-slide-in">
+      <p class="text-sm text-gray-500">{{ item.log.timestamp.strftime('%d/%m/%Y %H:%M') }} <span class="ml-2 text-gray-400">(+{{ days_diff }} días)</span></p>
+      <p>
+        {% if item.log.tipo_evento == 'comentario' %}🖋️
+        {% elif item.log.tipo_evento == 'archivo' %}📁
+        {% elif item.log.tipo_evento == 'estado' %}⚖️
+        {% else %}💡
+        {% endif %}
+        <strong>{{ item.log.author.name }}</strong>: {{ item.log.descripcion }}
+      </p>
+      {% if item.log.archivo_adjunto %}
+      <a href="{{ item.log.archivo_adjunto }}" target="_blank" class="text-blue-600 hover:underline text-sm">📎 Ver archivo adjunto</a>
+      {% endif %}
+      <span class="inline-block mt-2 text-xs px-2 py-1 rounded 
+        {% if item.log.tipo_evento == 'comentario' %}bg-blue-100 text-blue-800
+        {% elif item.log.tipo_evento == 'archivo' %}bg-yellow-100 text-yellow-800
+        {% elif item.log.tipo_evento == 'estado' %}bg-purple-100 text-purple-800
+        {% else %}bg-gray-100 text-gray-700{% endif %}">
+        {{ item.log.tipo_evento }}
+      </span>
+    </div>
+  </div>
+  {% endfor %}
+
+  <!-- Fin -->
+  <div class="timeline-entry right mt-12">
+    <div class="timeline-point bg-red-600"></div>
+    <div class="timeline-card">
+      <p class="text-sm text-gray-500">{{ project.end_date.strftime('%d/%m/%Y') }}</p>
+      <p class="font-semibold text-red-700">🔴 Fin del proyecto</p>
+    </div>
+  </div>
+</section>
+
+
+
+
+
+
+
+
+
+
+
+<hr class="my-10 border-gray-300">
+
+<h2 class="text-2xl font-bold text-corporativo-morado mb-6">
+    📝 Tareas del Proyecto: {{ project.name }}
+</h2>
+
+<a href="{{ url_for('create_task', project_id=project.id) }}"
+   class="bg-corporativo-morado text-white px-4 py-2 rounded hover:bg-corporativo-naranjo transition">
+    ➕ Crear Nueva Tarea
+</a>
+
+<div class="grid md:grid-cols-3 gap-6 mt-6">
+  {% for status in ['pendiente', 'en progreso', 'completada'] %}
+  <div class="bg-white rounded shadow border border-gray-200 p-4">
+    <h3 class="text-lg font-bold capitalize text-center text-gray-800 mb-4">{{ status }}</h3>
+    {% for task in tasks if task.status == status %}
+    <div class="mb-4 p-3 border-l-4 rounded {% if status == 'pendiente' %}border-yellow-400{% elif status == 'en progreso' %}border-blue-400{% else %}border-green-500{% endif %} bg-gray-50">
+      <h4 class="font-semibold text-sm">{{ task.title }}</h4>
+      <p class="text-sm text-gray-600">{{ task.description }}</p>
+      <p class="text-xs text-gray-500 mt-1">📅 {{ task.due_date or '—' }} | 👤 {{ task.assigned_to.name if task.assigned_to else '—' }}</p>
+
+      <div class="mt-2 space-x-2 text-xs">
+        {% if current_user.id == task.assigned_to_id or current_user.role in ['leader', 'admin'] %}
+          {% if task.status == 'pendiente' %}
+          <form method="post" action="{{ url_for('update_task_status', task_id=task.id, new_status='en progreso') }}" style="display:inline;">
+            <button type="submit" class="text-blue-600 hover:underline">🟦 Marcar en progreso</button>
+          </form>
+          {% endif %}
+          {% if task.status != 'completada' %}
+          <form method="post" action="{{ url_for('update_task_status', task_id=task.id, new_status='completada') }}" style="display:inline;">
+            <button type="submit" class="text-green-600 hover:underline">✅ Marcar completada</button>
+          </form>
+          {% endif %}
+        {% endif %}
+      </div>
+    </div>
+    {% else %}
+      <p class="text-gray-400 text-sm text-center">No hay tareas {{ status }}.</p>
+    {% endfor %}
+  </div>
+  {% endfor %}
+</div>
+
+<style>
+  .timeline-centered {
+    position: relative;
+    padding: 2rem 0;
+  }
+
+  .timeline-entry {
+    width: 50%;
+    position: relative;
+    padding-top: 2rem;
+  }
+
+  .timeline-entry.left {
+    left: 0;
+    text-align: right;
+  }
+
+  .timeline-entry.right {
+    left: 50%;
+    text-align: left;
+  }
+
+  .timeline-point {
+    position: absolute;
+    top: 0;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 2px solid white;
+    z-index: 10;
+  }
+
+  .timeline-entry.left .timeline-point {
+    right: -8px;
+  }
+
+  .timeline-entry.right .timeline-point {
+    left: -8px;
+  }
+
+  .timeline-card {
+    background: #fff;
+    padding: 15px;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    position: relative;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    z-index: 5;
+  }
+
+  .animate-slide-in {
+    animation: slideIn 0.6s ease forwards;
+  }
+  .timeline-point {
+  background: linear-gradient(135deg, #5c02a2, #f1680d);
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(92, 2, 162, 0.5); }
+  70% { box-shadow: 0 0 0 12px rgba(92, 2, 162, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(92, 2, 162, 0); }
+}
+
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+
+
+<!-- Script de filtros -->
+<script>
+function filterTimeline() {
+  const type = document.getElementById('filter-type').value;
+  const author = document.getElementById('filter-author').value;
+  document.querySelectorAll('.timeline-entry').forEach(entry => {
+    const matchType = type === 'all' || entry.dataset.type === type;
+    const matchAuthor = author === 'all' || entry.dataset.author === author;
+    entry.style.display = matchType && matchAuthor ? 'block' : 'none';
+  });
+}
+</script>
+
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h2 class="text-2xl font-bold text-corporativo-morado mb-6">
+    Tareas del Proyecto: {{ project.name }}
+</h2>
+
+<a href="{{ url_for('create_task', project_id=project.id) }}"
+   class="bg-corporativo-morado text-white px-4 py-2 rounded hover:bg-corporativo-naranjo transition">
+    ➕ Crear Nueva Tarea
+</a>
+
+<div class="grid md:grid-cols-3 gap-4 mt-6">
+  {% for status in ['pendiente', 'en progreso', 'completada'] %}
+  <div class="bg-white rounded shadow p-4">
+    <h3 class="text-lg font-bold capitalize text-center text-gray-700 mb-4">{{ status }}</h3>
+    {% for task in tasks if task.status == status %}
+      <div class="border-l-4 {% if status == 'pendiente' %}border-yellow-500{% elif status == 'en progreso' %}border-blue-500{% else %}border-green-500{% endif %} p-4 mb-3 bg-gray-50 rounded">
+        <h4 class="font-semibold">{{ task.title }}</h4>
+        <p class="text-sm text-gray-600">{{ task.description }}</p>
+        <p class="text-xs text-gray-500">📅 {{ task.due_date }} | 👤 {{ task.assigned_to.name }}</p>
+      </div>
+    {% else %}
+      <p class="text-sm text-gray-400 text-center">No hay tareas {{ status }}.</p>
+    {% endfor %}
+  </div>
+  {% endfor %}
+</div>
+
+
+
+{% endblock %}

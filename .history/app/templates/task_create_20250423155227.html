@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2 class="text-xl font-bold text-corporativo-morado mb-4">Nueva Tarea para: {{ project.name }}</h2>
+
+<form method="POST">
+    {{ form.hidden_tag() }}
+
+    <div>
+        {{ form.title.label }}
+        {{ form.title(class="form-control") }}
+    </div>
+
+    <div>
+        {{ form.description.label }}
+        {{ form.description(class="form-control") }}
+    </div>
+
+    <div>
+        {{ form.due_date.label }}
+        {{ form.due_date(class="form-control") }}
+    </div>
+
+    <div>
+        {{ form.estimated_hours.label }}
+        {{ form.estimated_hours(class="form-control") }}
+    </div>
+
+    <div>
+        {{ form.status.label }}
+        {{ form.status(class="form-control") }}
+    </div>
+
+    <div>
+        {{ form.assigned_to_id.label }}
+        {{ form.assigned_to_id(class="form-control") }}
+    </div>
+
+    <div>
+        {{ form.submit(class="btn btn-primary") }}
+    </div>
+</form>
+
+{% endblock %}

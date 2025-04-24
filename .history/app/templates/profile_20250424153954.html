@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="max-w-3xl mx-auto bg-white shadow rounded p-6">
+    <h2 class="text-2xl font-bold mb-4">Perfil de Usuario</h2>
+
+    <div class="mb-4">
+        <p><strong>Nombre:</strong> {{ user.name }}</p>
+        <p><strong>Correo:</strong> {{ user.email }}</p>
+        <p><strong>Rol:</strong> {{ user.role.capitalize() }}</p>
+    </div>
+
+    <div class="mb-6">
+        <p><strong>Proyectos asignados:</strong> {{ num_projects }}</p>
+        {% if user.role == 'participant' %}
+            <p><strong>Horas trabajadas:</strong> {{ total_hours }}</p>
+        {% endif %}
+    </div>
+
+    {% if projects %}
+        <h3 class="text-lg font-semibold mb-2">Proyectos:</h3>
+        <ul class="list-disc list-inside">
+            {% for project in projects %}
+                <li>{{ project.name }} (Progreso: {{ project.progress }}%)</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+
+
+    {% if current_user.role == 'admin' %}
+<div class="mt-10 bg-white shadow rounded p-6">
+  <h3 class="text-lg font-bold mb-4 text-corporativo-morado">👥 Todos los Usuarios Registrados</h3>
+  <div class="overflow-x-auto">
+    <table class="min-w-full text-sm divide-y divide-gray-200">
+      <thead class="bg-gray-100">
+        <tr>
+          <th class="px-4 py-2 text-left font-semibold text-gray-700">Nombre</th>
+          <th class="px-4 py-2 text-left font-semibold text-gray-700">Rol</th>
+          <th class="px-4 py-2 text-left font-semibold text-gray-700">Correo</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-100">
+        {% for u in all_users %}
+        <tr class="hover:bg-gray-50">
+          <td class="px-4 py-2">{{ u.name }}</td>
+          <td class="px-4 py-2 capitalize">{{ u.role }}</td>
+          <td class="px-4 py-2">{{ u.email }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+
+</div>
+{% endblock %}

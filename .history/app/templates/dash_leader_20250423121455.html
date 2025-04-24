@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h2 class="text-2xl font-bold mb-6 text-corporativo-morado">📋 Panel de Proyectos a tu Cargo</h2>
+
+{% set color_map = {
+    'activo': 'bg-green-100 text-green-800 border-green-300',
+    'suspendido': 'bg-red-100 text-red-800 border-red-300',
+    'finalizado': 'bg-blue-100 text-blue-800 border-blue-300',
+    'en espera': 'bg-yellow-100 text-yellow-800 border-yellow-300'
+} %}
+
+<div class="space-y-8">
+    {% for project in projects %}
+    <div class="bg-white border border-gray-200 shadow-md rounded-xl p-6">
+        <!-- Header del proyecto -->
+
+
+
+
+        
+        <div class="flex justify-between items-center mb-4">
+            <div>
+                <h3 class="text-xl font-bold text-corporativo-morado">{{ project.name }}</h3>
+                <p class="text-sm text-gray-600">Inicio: {{ project.start_date }} — Fin: {{ project.end_date }}</p>
+                <div class="w-full bg-gray-200 rounded-full h-2 mt-1">
+                    <div class="bg-corporativo-naranjo h-2 rounded-full" style="width: {{ project.progress }}%;"></div>
+                </div>
+            </div>
+            
+            <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold border capitalize {{ color_map[project.status] }}">
+                {{ project.status }}
+            </span>
+        </div>
+
+
+         <!-- Progreso -->
+            <p class="text-sm text-gray-600">Progreso: {{ project.progress }}%</p>
+            <div class="w-full bg-gray-200 rounded-full h-2 mt-1 mb-2">
+                <div class="bg-corporativo-naranjo h-2 rounded-full" style="width: {{ project.progress }}%;"></div>
+            </div> 
+
+        {% if project.admin_comment %}
+        <div class="mb-4 text-sm text-yellow-800 bg-yellow-50 border-l-4 border-yellow-400 p-3 rounded">
+            <strong>Comentario del Administrador:</strong><br>
+            {{ project.admin_comment }}
+        </div>
+        {% endif %}
+
+        <!-- Enlaces -->
+        <div class="mb-4 space-x-4">
+            <a href="{{ url_for('ver_bitacora', project_id=project.id) }}"
+               class="text-xs font-medium text-white bg-corporativo-morado hover:bg-corporativo-naranjo px-3 py-1.5 rounded transition">📚 Ver Bitácora</a>
+            <a href="{{ url_for('project_tasks', project_id=project.id) }}"
+               class="text-xs font-medium text-white bg-green-700 hover:bg-green-800 px-3 py-1.5 rounded transition">🧩 Ver Tareas</a>
+        </div>
+
+        <!-- Tabla de tareas dentro del proyecto -->
+        {% set tareas = project.tasks %}
+        {% if tareas %}
+        <div class="overflow-x-auto">
+            <table class="min-w-full text-sm divide-y divide-gray-200 border">
+                <thead class="bg-gray-100 text-left text-xs font-semibold text-gray-700">
+                    <tr>
+                        <th class="px-4 py-2">Título</th>
+                        <th class="px-4 py-2">Estado</th>
+                        <th class="px-4 py-2">Responsable</th>
+                        <th class="px-4 py-2">Vencimiento</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100">
+                    {% for task in tareas %}
+                    <tr>
+                        <td class="px-4 py-2">{{ task.title }}</td>
+                        <td class="px-4 py-2 capitalize">{{ task.status }}</td>
+                        <td class="px-4 py-2">{{ task.assigned_to.name }}</td>
+                        <td class="px-4 py-2">{{ task.due_date.strftime('%d/%m/%Y') }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="text-sm text-gray-500 italic">Este proyecto aún no tiene tareas asignadas.</p>
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock %}

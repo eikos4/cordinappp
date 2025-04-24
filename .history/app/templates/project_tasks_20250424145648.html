@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h2 class="text-2xl font-bold text-corporativo-morado mb-6">Tareas del Proyecto: {{ project.name }}</h2>
+
+<a href="{{ url_for('create_task', project_id=project.id) }}"
+   class="bg-corporativo-morado text-white px-4 py-2 rounded hover:bg-corporativo-naranjo transition">
+   ➕ Crear Nueva Tarea
+</a>
+
+<!-- Sistema drag and drop -->
+<div id="columns" class="grid md:grid-cols-3 gap-6 mt-6">
+    {% for status in ['pendiente', 'en progreso', 'completada'] %}
+    <div class="task-column bg-white rounded shadow border border-gray-200 p-4">
+      <h3 class="text-lg font-bold capitalize text-center text-gray-800 mb-4">{{ status }}</h3>
+      <div id="column-{{ status }}" class="task-list space-y-4 min-h-[100px]" data-status="{{ status }}">
+        {% for task in tasks if task.status == status %}
+        <div class="task-card bg-gray-50 p-3 rounded shadow border border-gray-300" data-task-id="{{ task.id }}">
+          <h4 class="font-semibold text-sm">{{ task.title }}</h4>
+          <p class="text-sm text-gray-600">{{ task.description }}</p>
+          <p class="text-xs text-gray-500 mt-1">📅 {{ task.due_date or 'Sin fecha' }} | 👤 {{ task.assigned_to.name }}</p>
+          <p class="text-xs text-gray-500">⏳ Estimadas: {{ task.estimated_hours }}h | 🕒 Reales: {{ task.real_hours }}h</p>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+
+
+
+
+
+
+
+<!-- Tabla detallada -->
+<div class="mt-12">
+  <h3 class="text-xl font-bold mb-4 text-corporativo-morado">📋 Lista Completa de Tareas</h3>
+  <div class="overflow-x-auto rounded shadow border border-gray-200">
+    <table class="min-w-full text-sm divide-y divide-gray-200 bg-white">
+      <thead class="bg-gray-100 text-xs font-semibold text-gray-700 text-left">
+        <tr>
+          <th class="px-4 py-2">Título</th>
+          <th class="px-4 py-2">Descripción</th>
+          <th class="px-4 py-2">Estado</th>
+          <th class="px-4 py-2">Responsable</th>
+          <th class="px-4 py-2">Fecha Límite</th>
+          <th class="px-4 py-2">Acciones</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-100">
+        {% for task in tasks %}
+        <tr>
+          <td class="px-4 py-2 font-medium text-gray-900">{{ task.name }}</td>
+          <td class="px-4 py-2 text-gray-600">{{ task.description }}</td>
+          <td class="px-4 py-2 capitalize">{{ task.status }}</td>
+          <td class="px-4 py-2">{{ task.assigned_to.name if task.assigned_to else 'Sin asignar' }}</td>
+          <td class="px-4 py-2">{{ task.due_date or 'Sin fecha' }}</td>
+          <td class="px-4 py-2 space-x-2 text-sm">
+            {% if current_user.role in ['admin', 'leader'] or current_user.id == task.assigned_to_id %}
+              <a href="{{ url_for('edit_task', task_id=task.id) }}"
+                class="text-indigo-600 hover:underline text-sm">✏️ Editar</a>
+            {% endif %}
+
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="6" class="px-4 py-4 text-center text-gray-400">No hay tareas registradas.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+
+<!-- JS: SortableJS -->
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+<script>
+document.querySelectorAll('.task-list').forEach(column => {
+  new Sortable(column, {
+    group: 'shared',
+    animation: 150,
+    onEnd: function (evt) {
+      const taskId = evt.item.dataset.taskId;
+      const newStatus = evt.to.dataset.status;
+      fetch(`/tasks/${taskId}/update_status/${newStatus}`, {
+        method: 'POST'
+      }).then(() => location.reload());
+    }
+  });
+});
+
+{% endblock %}

@@ -1,0 +1,21 @@
+rror de nombre
+NameError: el nombre 'TaskForm' no está definido
+
+Rastreo (última llamada más reciente)
+Archivo "C:\Users\eikos\OneDrive\Escritorio\ProyectTraker\venv\Lib\site-packages\flask\app.py" , línea 1536 , en__call__
+devolver self.wsgi_app(environ, start_response)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Archivo "C:\Users\eikos\OneDrive\Escritorio\ProyectTraker\venv\Lib\site-packages\flask\app.py" , línea 1514 , enwsgi_app
+respuesta = self.handle_exception(e)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+Archivo "C:\Users\eikos\OneDrive\Escritorio\ProyectTraker\venv\Lib\site-packages\flask\app.py" , línea 1511 , enwsgi_app
+respuesta = self.full_dispatch_request()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Archivo "C:\Users\eikos\OneDrive\Escritorio\ProyectTraker\venv\Lib\site-packages\flask\app.py" , línea 919 , enfull_dispatch_request
+rv = self.manejar_excepción_de_usuario(e)
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Archivo "C:\Users\eikos\OneDrive\Escritorio\ProyectTraker\venv\Lib\site-packages\flask\app.py" , línea 917 , enfull_dispatch_request
+rv = self.solicitud_de_envío()
+      ^^^^^^^^^^^^^^^^^^^^^^^^
+Archivo "C:\Users\eikos\OneDrive\Escritorio\ProyectTraker\venv\Lib\site-packages\flask\app.py" , línea 902 , endispatch_request
+devolver self.asegurar_sincronización(self.funciones_de_vista[

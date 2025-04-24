@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h2 class="text-3xl font-bold mb-6 text-corporativo-morado">📋 Proyectos  </h2>
+
+{% set color_map = {
+    'activo': 'bg-green-100 text-green-800 border-green-300',
+    'suspendido': 'bg-red-100 text-red-800 border-red-300',
+    'finalizado': 'bg-blue-100 text-blue-800 border-blue-300',
+    'en espera': 'bg-yellow-100 text-yellow-800 border-yellow-300'
+} %}
+
+<div class="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
+  {% for project in projects %}
+  <div class="bg-white shadow border border-gray-200 rounded-xl p-5">
+    <!-- Encabezado -->
+    <div class="flex justify-between items-start mb-3">
+      <div>
+        <h3 class="text-xl font-semibold text-corporativo-morado">{{ project.name }}</h3>
+        <p class="text-xs text-gray-500">📅 {{ project.start_date }} → {{ project.end_date }}</p>
+        <p class="text-sm mt-1 text-gray-700">Progreso: {{ project.progress }}%</p>
+        <div class="w-full bg-gray-200 h-2 rounded mt-1 mb-2">
+          <div class="bg-corporativo-naranjo h-2 rounded" style="width: {{ project.progress }}%;"></div>
+        </div>
+      </div>
+      <span class="text-xs px-3 py-1 rounded-full border font-semibold capitalize {{ color_map[project.status] }}">
+        {{ project.status }}
+      </span>
+    </div>
+
+    {% if project.admin_comment %}
+    <div class="text-sm text-yellow-800 bg-yellow-50 border-l-4 border-yellow-400 p-3 rounded mb-3">
+      <strong>Comentario del Administrador:</strong><br>{{ project.admin_comment }}
+    </div>
+    {% endif %}
+
+    <!-- Acciones -->
+    <div class="flex gap-2 mb-4">
+      <a href="{{ url_for('ver_bitacora', project_id=project.id) }}"
+         class="bg-corporativo-morado text-white text-xs px-3 py-1.5 rounded hover:bg-corporativo-naranjo transition">
+        📚 Bitácora
+      </a>
+      <a href="{{ url_for('project_tasks', project_id=project.id) }}"
+         class="bg-green-600 text-white text-xs px-3 py-1.5 rounded hover:bg-green-700 transition">
+        ✅ Ver Tareas
+      </a>
+    </div>
+
+    <!-- Tareas -->
+    <table class="w-full text-sm mt-2 divide-y divide-gray-200 border border-gray-200 rounded">
+      <thead class="bg-gray-100 text-xs font-semibold text-gray-700 text-left">
+        <tr>
+          <th class="px-3 py-2">Tarea</th>
+          <th class="px-3 py-2">Responsable</th>
+          <th class="px-3 py-2">Estado</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-100">
+        {% for task in tasks_by_project[project.id] %}
+        <tr>
+          <td class="px-3 py-2">{{ task.name }}</td>
+          <td class="px-3 py-2">{{ task.assigned_to.name if task.assigned_to else '—' }}</td>
+          <td class="px-3 py-2 capitalize">{{ task.status }}</td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="3" class="text-center text-gray-400 py-3">No hay tareas para este proyecto</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endfor %}
+</div>
+
+<!-- Botón métricas -->
+<div class="text-center mt-10">
+  <a href="{{ url_for('admin_metrics') }}"
+     class="bg-corporativo-morado hover:bg-corporativo-naranjo text-white px-6 py-2 rounded shadow inline-block transition">
+    📈 Ver Métricas del Sistema
+  </a>
+</div>
+
+{% endblock %}

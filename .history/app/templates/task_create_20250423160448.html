@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block content %}
+<form method="POST">
+    {{ form.hidden_tag() }}
+  
+    <div>
+      {{ form.name.label }}<br>
+      {{ form.name(class="form-input") }}
+    </div>
+  
+    <div>
+      {{ form.description.label }}<br>
+      {{ form.description(class="form-input") }}
+    </div>
+  
+    <div>
+      {{ form.due_date.label }}<br>
+      {{ form.due_date(class="form-input") }}
+    </div>
+  
+    <div>
+      {{ form.estimated_hours.label }}<br>
+      {{ form.estimated_hours(class="form-input") }}
+    </div>
+  
+    <div>
+      {{ form.status.label }}<br>
+      {{ form.status(class="form-input") }}
+    </div>
+  
+    <div>
+      {{ form.assigned_to_id.label }}<br>
+      {{ form.assigned_to_id(class="form-input") }}
+    </div>
+  
+    <div class="mt-4">
+      {{ form.submit(class="btn btn-primary") }}
+    </div>
+  </form>
+  
+{% endblock %}

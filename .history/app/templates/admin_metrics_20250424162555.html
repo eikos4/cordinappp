@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h2 class="text-3xl font-bold text-corporativo-morado mb-8">📈 Métricas Generales del Sistema</h2>
+
+<!-- Usuarios por rol -->
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-8">
+  <div class="bg-white border-l-4 border-blue-500 p-6 shadow rounded text-center">
+    <h3 class="text-lg font-semibold text-gray-700">👑 Administradores</h3>
+    <p class="text-3xl font-bold text-blue-600 mt-2">{{ role_counts.admin }}</p>
+  </div>
+  <div class="bg-white border-l-4 border-purple-500 p-6 shadow rounded text-center">
+    <h3 class="text-lg font-semibold text-gray-700">📋 Líderes</h3>
+    <p class="text-3xl font-bold text-purple-600 mt-2">{{ role_counts.leader }}</p>
+  </div>
+  <div class="bg-white border-l-4 border-green-500 p-6 shadow rounded text-center">
+    <h3 class="text-lg font-semibold text-gray-700">🤝 Colaboradores</h3>
+    <p class="text-3xl font-bold text-green-600 mt-2">{{ role_counts.participant }}</p>
+  </div>
+</div>
+
+<!-- Horas por usuario -->
+<div class="bg-white p-6 shadow rounded mb-8">
+  <h3 class="text-xl font-bold mb-4 text-corporativo-morado">🕒 Horas Trabajadas por Usuario</h3>
+  <ul class="divide-y divide-gray-200 text-sm">
+    {% for user, hours in user_hours.items() %}
+    <li class="py-2 flex justify-between">
+      <span class="text-gray-700">{{ user }}</span>
+      <strong class="text-corporativo-naranjo">{{ hours }} h</strong>
+    </li>
+    {% endfor %}
+  </ul>
+</div>
+
+<!-- Horas por proyecto -->
+<div class="bg-white p-6 shadow rounded">
+  <h3 class="text-xl font-bold mb-4 text-corporativo-morado">📂 Horas Totales por Proyecto</h3>
+  <ul class="divide-y divide-gray-200 text-sm">
+    {% for project, hours in project_hours.items() %}
+    <li class="py-2 flex justify-between">
+      <span class="text-gray-700">{{ project }}</span>
+      <strong class="text-blue-700">{{ hours }} h</strong>
+    </li>
+    {% endfor %}
+  </ul>
+</div>
+
+{% endblock %}

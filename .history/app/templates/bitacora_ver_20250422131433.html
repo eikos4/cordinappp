@@ -1,0 +1,181 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="timeline-centered max-w-2xl mx-auto relative mt-10">
+  <!-- Línea vertical -->
+  <div class="absolute left-1/2 top-0 bottom-0 w-1 bg-gray-300 transform -translate-x-1/2"></div>
+
+  <!-- Inicio del proyecto -->
+  <div class="relative mb-12">
+    <div class="timeline-point bg-green-600"></div>
+    <div class="ml-12">
+      <p class="text-sm text-gray-500">{{ project.start_date.strftime('%d/%m/%Y') }}</p>
+      <p class="font-semibold text-green-700">🟢 Inicio del proyecto</p>
+    </div>
+  </div>
+
+  <!-- Eventos -->
+  {% for item in timeline %}
+  <div class="relative" style="margin-top: {{ item.margin_top }}px;">
+    <div class="timeline-point bg-corporativo-morado"></div>
+    <div class="ml-12">
+      <p class="text-sm text-gray-500">{{ item.log.timestamp.strftime('%d/%m/%Y %H:%M') }}</p>
+      <p><strong>{{ item.log.author.name }}</strong>: {{ item.log.descripcion }}</p>
+      {% if item.log.archivo_adjunto %}
+      <a href="{{ item.log.archivo_adjunto }}" target="_blank" class="text-blue-600 hover:underline text-sm">
+        📎 Ver archivo adjunto
+      </a>
+      {% endif %}
+      <span class="inline-block mt-2 text-xs bg-gray-200 px-2 py-1 rounded">{{ item.log.tipo_evento }}</span>
+    </div>
+  </div>
+  {% endfor %}
+
+  <!-- Fin del proyecto -->
+  <div class="relative mt-12">
+    <div class="timeline-point bg-red-600"></div>
+    <div class="ml-12">
+      <p class="text-sm text-gray-500">{{ project.end_date.strftime('%d/%m/%Y') }}</p>
+      <p class="font-semibold text-red-700">🔴 Fin del proyecto</p>
+    </div>
+  </div>
+</section>
+
+
+
+<h2 class="text-3xl font-bold text-center text-corporativo-morado mb-8">
+    Bitácora del Proyecto: {{ project.name }}
+</h2>
+
+<!-- Tabla resumen -->
+<div class="bg-white p-6 rounded shadow mb-10 max-w-5xl mx-auto">
+    <h3 class="text-xl font-semibold text-corporativo-azul mb-4">Resumen de Registros</h3>
+    <div class="overflow-x-auto">
+        <table class="min-w-full text-sm divide-y divide-gray-200">
+            <thead class="bg-gray-100 text-left text-xs font-semibold text-gray-700">
+                <tr>
+                    <th class="px-4 py-2">Fecha</th>
+                    <th class="px-4 py-2">Autor</th>
+                    <th class="px-4 py-2">Tipo</th>
+                    <th class="px-4 py-2">Descripción</th>
+                    <th class="px-4 py-2">Archivo</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+                {% for log in registros %}
+                <tr>
+                    <td class="px-4 py-2">{{ log.timestamp.strftime('%d/%m/%Y %H:%M') }}</td>
+                    <td class="px-4 py-2">{{ log.author.name }}</td>
+                    <td class="px-4 py-2 capitalize">{{ log.tipo_evento }}</td>
+                    <td class="px-4 py-2">{{ log.descripcion }}</td>
+                    <td class="px-4 py-2">
+                        {% if log.archivo_adjunto %}
+                        <a href="{{ log.archivo_adjunto }}" target="_blank" class="text-blue-600 hover:underline text-xs">📎 Ver</a>
+                        {% else %}
+                        —
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<h2 class="text-3xl font-bold text-center text-corporativo-morado mb-8">
+    Cronología del Proyecto: {{ project.name }}
+</h2>
+
+<section class="timeline max-w-4xl mx-auto">
+  <ul>
+    <!-- Inicio del proyecto -->
+    <li style="margin-top: 0px;">
+      <div>
+        <time>{{ project.start_date.strftime('%d/%m/%Y') }}</time>
+        <p class="font-semibold text-green-700">🟢 Inicio del proyecto</p>
+      </div>
+    </li>
+
+    <!-- Eventos intermedios -->
+    {% for item in timeline %}
+    <li style="margin-top: {{ item.margin_top }}px;">
+      <div>
+        <time>{{ item.log.timestamp.strftime('%d/%m/%Y %H:%M') }}</time>
+        <p><strong>{{ item.log.author.name }}</strong>: {{ item.log.descripcion }}</p>
+        {% if item.log.archivo_adjunto %}
+        <a href="{{ item.log.archivo_adjunto }}" target="_blank" class="text-blue-600 hover:underline text-sm">
+            📎 Ver archivo adjunto
+        </a>
+        {% endif %}
+        <span class="inline-block mt-2 text-xs bg-gray-200 px-2 py-1 rounded">{{ item.log.tipo_evento }}</span>
+      </div>
+    </li>
+    {% endfor %}
+
+    <!-- Fin del proyecto -->
+    <li style="margin-top: 40px;">
+      <div>
+        <time>{{ project.end_date.strftime('%d/%m/%Y') }}</time>
+        <p class="font-semibold text-red-700">🔴 Fin del proyecto</p>
+      </div>
+    </li>
+  </ul>
+</section>
+
+<!-- Estilos timeline -->
+<style>
+.timeline ul {
+  padding: 40px 0;
+  position: relative;
+  list-style: none;
+}
+.timeline ul::before {
+  content: '';
+  background: #ccc;
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  transform: translateX(-50%);
+}
+.timeline ul li {
+  position: relative;
+  width: 50%;
+  padding: 20px;
+  box-sizing: border-box;
+}
+.timeline ul li div {
+  background: #fff;
+  padding: 15px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  position: relative;
+}
+.timeline ul li:nth-child(odd) {
+  left: 0;
+  text-align: right;
+}
+.timeline ul li:nth-child(even) {
+  left: 50%;
+  text-align: left;
+}
+.timeline ul li::after {
+  content: '';
+  position: absolute;
+  top: 20px;
+  width: 12px;
+  height: 12px;
+  background: #5c02a2;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  z-index: 1;
+}
+.timeline ul li:nth-child(odd)::after {
+  right: -6px;
+}
+.timeline ul li:nth-child(even)::after {
+  left: -6px;
+}
+</style>
+
+{% endblock %}

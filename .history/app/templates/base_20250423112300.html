@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Project Tracker</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/icon3.png') }}">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        corporativo: {
+                            fondo: '#f2f2f2',
+                            morado: '#5c02a2',
+                            azul: '#0b1738',
+                            naranjo: '#f1680d',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <script>
+        // Al cargar la página, aplicar tema guardado
+        if (localStorage.getItem('dark-mode') === 'true') {
+          document.documentElement.classList.add('dark');
+        }
+      </script>
+      
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
+
+</head>
+<body class="bg-gray-100 text-gray-800 min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-corporativo-azul text-white px-6 py-4 flex flex-col md:flex-row justify-between items-center">
+
+        <h1 class="text-2xl font-bold mb-2 md:mb-0">Project Tracker</h1>
+        
+        {% if current_user.is_authenticated %}
+        <div class="flex items-center gap-4 text-sm">
+            <span>Hola, {{ current_user.name }}</span>
+
+            <!-- Notificaciones -->
+            <a href="{{ url_for('notificaciones') }}" class="relative hover:underline">
+                🔔 Notificaciones
+                {% set unread = current_user.notifications|selectattr("is_read", "equalto", False)|list|length %}
+                {% if unread > 0 %}
+                <span class="absolute -top-2 -right-4 bg-red-600 text-white text-xs font-bold rounded-full px-2 py-0.5 shadow">
+                    {{ unread }}
+                </span>
+                {% endif %}
+            </a>
+
+            <!-- Logout -->
+            <a href="{{ url_for('logout') }}" class="hover:underline">Cerrar sesión</a>
+        </div>
+        {% endif %}
+    </header>
+
+    <!-- Navegación -->
+    {% if current_user.is_authenticated %}
+    <nav class="bg-white shadow px-6 py-3 flex flex-wrap gap-6 text-sm border-b border-corporativo-fondo">
+    
+        {% if current_user.role == 'admin' %}
+            <a href="{{ url_for('dashboard') }}" class="flex items-center gap-1 text-blue-700 hover:underline">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h18v18H3z" />
+                </svg> Dashboard
+            </a>
+    
+            <a href="{{ url_for('show_projects') }}" class="flex items-center gap-1 text-blue-700 hover:underline">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-6h13v6H9zM3 7v6h6V7H3z" />
+                </svg> Proyectos
+            </a>
+    
+            <a href="{{ url_for('create_project') }}" class="flex items-center gap-1 text-blue-700 hover:underline">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg> Crear Proyecto
+            </a>
+
+            <a href="{{ url_for('update_project_progress') }}" class="flex items-center gap-1 text-green-700 hover:underline">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" />
+                </svg> Actualizar Progreso
+            </a>
+    
+            <a href="{{ url_for('register') }}" class="flex items-center gap-1 text-blue-700 hover:underline">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9a6 6 0 10-12 0 6 6 0 0012 0zm0 0v3a3 3 0 01-3 3H9a3 3 0 01-3-3V9" />
+                </svg> Crear Usuario
+            </a>
+    
+            <a href="{{ url_for('assign_user') }}" class="flex items-center gap-1 text-blue-700 hover:underline">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87M16 3.13a4 4 0 010 7.75M8 3.13a4 4 0 100 7.75" />
+                </svg> Asignar Usuarios
+            </a>
+    
+            <a href="{{ url_for('admin_metrics') }}" class="flex items-center gap-1 text-blue-700 hover:underline">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 11V5a1 1 0 112 0v6h6a1 1 0 110 2h-6v6a1 1 0 11-2 0v-6H5a1 1 0 110-2h6z" />
+                </svg> Métricas
+            </a>
+    
+            <a href="{{ url_for('agregar_bitacora') }}" class="flex items-center gap-1 text-corporativo-morado hover:underline">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 20l9-5-9-5-9 5 9 5z" />
+                </svg> Bitácora
+            </a>
+    
+            <a href="{{ url_for('update_project_status') }}" class="flex items-center gap-1 text-morado hover:underline">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" />
+                </svg> Cambiar Estado
+            </a>
+    
+        {% elif current_user.role == 'leader' %}
+            <a href="{{ url_for('dashboard') }}" class="flex items-center gap-1 text-green-700 hover:underline">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h18v18H3z" />
+                </svg> Dashboard
+            </a>
+    
+            <a href="{{ url_for('assign_user') }}" class="flex items-center gap-1 text-green-700 hover:underline">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87M16 3.13a4 4 0 010 7.75M8 3.13a4 4 0 100 7.75" />
+                </svg> Asignar Usuarios
+            </a>
+    
+            <a href="{{ url_for('project_hours_summary') }}" class="flex items-center gap-1 text-green-700 hover:underline">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h11M9 21V3m0 0L5 7m4-4l4 4" />
+                </svg> Resumen de Horas
+            </a>
+    
+            <a href="{{ url_for('update_project_progress') }}" class="flex items-center gap-1 text-green-700 hover:underline">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" />
+                </svg> Actualizar Progreso
+            </a>
+    
+            <a href="{{ url_for('agregar_bitacora') }}" class="flex items-center gap-1 text-corporativo-morado hover:underline">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 20l9-5-9-5-9 5 9 5z" />
+                </svg> Bitácora
+            </a>
+            <a href="{{ url_for('dashboard') }}" class="flex items-center gap-1 text-green-700 hover:underline">
+                📋 Tareas por Proyecto
+            </a>
+            
+    
+        {% elif current_user.role == 'participant' %}
+            <a href="{{ url_for('dashboard') }}" class="flex items-center gap-1 text-purple-700 hover:underline">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h18v18H3z" />
+                </svg> Dashboard
+            </a>
+    
+            <a href="{{ url_for('log_hours') }}" class="flex items-center gap-1 text-purple-700 hover:underline">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3M3 11h18M5 19h14a2 2 0 002-2V7H3v10a2 2 0 002 2z" />
+                </svg> Registrar Horas
+            </a>
+    
+            <a href="{{ url_for('agregar_bitacora') }}" class="flex items-center gap-1 text-corporativo-morado hover:underline">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 20l9-5-9-5-9 5 9 5z" />
+                </svg> Bitácora
+            </a>
+            
+        {% endif %}
+    
+        <a href="{{ url_for('user_profile') }}" class="flex items-center gap-1 text-gray-700 hover:underline">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A9 9 0 1119.78 3.22a9 9 0 01-14.66 14.584z" />
+            </svg> Mi Perfil
+        </a>
+    </nav>
+    {% endif %}
+    
+
+
+    <!-- Contenido principal -->
+    <main class="flex-1 p-6">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 px-4 py-3 rounded mb-4">
+                    {% for message in messages %}
+                        <p>{{ message }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+</body>
+</html>

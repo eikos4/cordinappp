@@ -1,0 +1,164 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h2 class="text-3xl font-bold text-center text-corporativo-morado mb-8 animate-fade-in">
+    Bitácora del Proyecto: {{ project.name }}
+</h2>
+
+<!-- Filtros -->
+<div class="max-w-5xl mx-auto mb-6 flex flex-wrap gap-4 items-center justify-between text-sm">
+  <div>
+    <label for="filter-type">Filtrar por tipo:</label>
+    <select id="filter-type" class="border rounded px-2 py-1" onchange="filterTimeline()">
+      <option value="all">Todos</option>
+      <option value="comentario">Comentario</option>
+      <option value="archivo">Archivo</option>
+      <option value="estado">Estado</option>
+    </select>
+  </div>
+  <div>
+    <label for="filter-author">Filtrar por autor:</label>
+    <select id="filter-author" class="border rounded px-2 py-1" onchange="filterTimeline()">
+      <option value="all">Todos</option>
+      {% for log in registros|unique(attribute='author.name') %}
+      <option value="{{ log.author.name }}">{{ log.author.name }}</option>
+      {% endfor %}
+    </select>
+  </div>
+</div>
+
+<!-- Tabla colapsable -->
+<details class="bg-white p-6 rounded shadow mb-10 max-w-5xl mx-auto overflow-x-auto">
+  <summary class="text-xl font-semibold text-corporativo-azul cursor-pointer select-none">Resumen de Registros</summary>
+  <table class="min-w-full text-sm divide-y divide-gray-200 mt-4">
+    <thead class="bg-gray-100 text-left text-xs font-semibold text-gray-700">
+      <tr>
+        <th class="px-4 py-2">Fecha</th>
+        <th class="px-4 py-2">Autor</th>
+        <th class="px-4 py-2">Tipo</th>
+        <th class="px-4 py-2">Descripción</th>
+        <th class="px-4 py-2">Archivo</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-100">
+      {% for log in registros %}
+      <tr>
+        <td class="px-4 py-2">{{ log.timestamp.strftime('%d/%m/%Y %H:%M') }}</td>
+        <td class="px-4 py-2">{{ log.author.name }}</td>
+        <td class="px-4 py-2 capitalize">{{ log.tipo_evento }}</td>
+        <td class="px-4 py-2">{{ log.descripcion }}</td>
+        <td class="px-4 py-2">
+          {% if log.archivo_adjunto %}
+          <a href="{{ log.archivo_adjunto }}" target="_blank" class="text-blue-600 hover:underline text-xs">📎 Ver</a>
+          {% else %}—{% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</details>
+
+<h2 class="text-3xl font-bold text-center text-corporativo-morado mb-8">Cronología del Proyecto</h2>
+<section class="timeline-centered max-w-2xl mx-auto relative">
+  <div class="absolute left-1/2 top-0 bottom-0 w-1 bg-gray-300 transform -translate-x-1/2"></div>
+
+  <!-- Inicio -->
+  <div class="relative mb-12">
+    <div class="timeline-point bg-green-600"></div>
+    <div class="ml-12">
+      <p class="text-sm text-gray-500">{{ project.start_date.strftime('%d/%m/%Y') }}</p>
+      <p class="font-semibold text-green-700">🟢 Inicio del proyecto</p>
+    </div>
+  </div>
+
+  {% set previous_date = project.start_date %}
+  {% for item in timeline %}
+  {% set days_diff = (item.log.timestamp.date() - previous_date).days %}
+   {% set previous_date = item.log.timestamp.date() %}
+
+
+
+
+
+  {% set previous_date = item.log.timestamp %}
+  <div class="relative timeline-entry" style="margin-top: {{ item.margin_top }}px;" data-type="{{ item.log.tipo_evento }}" data-author="{{ item.log.author.name }}">
+    <div class="timeline-point bg-corporativo-morado"></div>
+    <div class="ml-12 animate-slide-in">
+      <p class="text-sm text-gray-500">{{ item.log.timestamp.strftime('%d/%m/%Y %H:%M') }} <span class="ml-2 text-gray-400">(+{{ days_diff }} días)</span></p>
+      <p>
+        {% if item.log.tipo_evento == 'comentario' %}🖋️ 
+        {% elif item.log.tipo_evento == 'archivo' %}📁 
+        {% elif item.log.tipo_evento == 'estado' %}⚖️ 
+        {% else %}💡 
+        {% endif %}
+        <strong>{{ item.log.author.name }}</strong>: {{ item.log.descripcion }}
+      </p>
+      {% if item.log.archivo_adjunto %}
+      <a href="{{ item.log.archivo_adjunto }}" target="_blank" class="text-blue-600 hover:underline text-sm">
+        📎 Ver archivo adjunto
+      </a>
+      {% endif %}
+      <span class="inline-block mt-2 text-xs px-2 py-1 rounded 
+            {% if item.log.tipo_evento == 'comentario' %}bg-blue-100 text-blue-800
+            {% elif item.log.tipo_evento == 'archivo' %}bg-yellow-100 text-yellow-800
+            {% elif item.log.tipo_evento == 'estado' %}bg-purple-100 text-purple-800
+            {% else %}bg-gray-100 text-gray-700{% endif %}">
+        {{ item.log.tipo_evento }}
+      </span>
+    </div>
+  </div>
+  {% endfor %}
+
+  <!-- Fin -->
+  <div class="relative mt-12">
+    <div class="timeline-point bg-red-600"></div>
+    <div class="ml-12">
+      <p class="text-sm text-gray-500">{{ project.end_date.strftime('%d/%m/%Y') }}</p>
+      <p class="font-semibold text-red-700">🔴 Fin del proyecto</p>
+    </div>
+  </div>
+</section>
+
+<!-- Estilos timeline -->
+<style>
+  .timeline-point {
+    position: absolute;
+    top: 0;
+    left: calc(50% - 8px);
+    width: 16px;
+    height: 16px
+    border-radius: 9999px;
+    border: 2px solid white;
+    box-shadow: 0 0 0 2px rgba(0,0,0,0.05);
+    z-index: 10;
+  }
+  .animate-slide-in {
+    animation: slideIn 0.6s ease forwards;
+  }
+  .animate-fade-in {
+    animation: fadeIn 0.8s ease-in;
+  }
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+</style>
+
+<!-- Script de filtros -->
+<script>
+function filterTimeline() {
+  const type = document.getElementById('filter-type').value;
+  const author = document.getElementById('filter-author').value;
+  document.querySelectorAll('.timeline-entry').forEach(entry => {
+    const matchType = type === 'all' || entry.dataset.type === type;
+    const matchAuthor = author === 'all' || entry.dataset.author === author;
+    entry.style.display = matchType && matchAuthor ? 'block' : 'none';
+  });
+}
+</script>
+
+{% endblock %}

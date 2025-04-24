@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h2 class="text-2xl font-bold text-corporativo-morado mb-6">
+    Tareas del Proyecto: {{ project.name }}
+</h2>
+
+<a href="{{ url_for('create_task', project_id=project.id) }}"
+   class="bg-corporativo-morado text-white px-4 py-2 rounded hover:bg-corporativo-naranjo transition">
+    ➕ Crear Nueva Tarea2
+</a>
+
+<div class="grid md:grid-cols-3 gap-6 mt-6">
+  {% for status in ['pendiente', 'en progreso', 'completada'] %}
+  <div class="bg-white rounded shadow border border-gray-200 p-4">
+    <h3 class="text-lg font-bold capitalize text-center text-gray-800 mb-4">{{ status }}</h3>
+    {% for task in tasks if task.status == status %}
+    <div class="mb-4 p-3 border-l-4 rounded {% if status == 'pendiente' %}border-yellow-400{% elif status == 'en progreso' %}border-blue-400{% else %}border-green-500{% endif %} bg-gray-50">
+      <h4 class="font-semibold text-sm">{{ task.name }}</h4>
+      <p class="text-sm text-gray-600">{{ task.description }}</p>
+      <p class="text-xs text-gray-500 mt-1">📅 {{ task.due_date }} | 👤 {{ task.assigned_to.name }}</p>
+
+      <div class="mt-2 space-x-2 text-xs">
+        {% if current_user.id == task.assigned_to_id or current_user.role in ['leader', 'admin'] %}
+          {% if task.status == 'pendiente' %}
+          <form method="post" action="{{ url_for('update_task_status', task_id=task.id, new_status='en progreso') }}" style="display:inline;">
+            <button type="submit" class="text-blue-600 hover:underline">🟦 Marcar en progreso</button>
+          </form>
+          {% endif %}
+          {% if task.status != 'completada' %}
+          <form method="post" action="{{ url_for('update_task_status', task_id=task.id, new_status='completada') }}" style="display:inline;">
+            <button type="submit" class="text-green-600 hover:underline">✅ Marcar completada</button>
+          </form>
+          {% endif %}
+        {% endif %}
+      </div>
+    </div>
+
+
+
+
+    
+    {% else %}
+      <p class="text-gray-400 text-sm text-center">No hay tareas {{ status }}.</p>
+    {% endfor %}
+  </div>
+  {% endfor %}
+</div>
+
+{% endblock %}

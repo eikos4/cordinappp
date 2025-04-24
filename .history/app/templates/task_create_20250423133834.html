@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2 class="text-xl font-bold text-corporativo-morado mb-4">Nueva Tarea para: {{ project.name }}</h2>
+
+<form method="POST" class="bg-white p-6 rounded shadow max-w-lg mx-auto">
+    {{ form.hidden_tag() }}
+    <div class="mb-4">
+        {{ form.name.label }} {{ form.name(class="w-full border p-2 rounded") }}
+    </div>
+    <div class="mb-4">
+        {{ form.description.label }} {{ form.description(class="w-full border p-2 rounded") }}
+    </div>
+    <div class="mb-4">
+        {{ form.estimated_hours.label }} {{ form.estimated_hours(class="w-full border p-2 rounded") }}
+    </div>
+    <div>
+        {{ form.submit(class="bg-corporativo-morado text-white py-2 px-4 rounded") }}
+    </div>
+</form>
+{% endblock %}
