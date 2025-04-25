@@ -54,5 +54,13 @@
     </p>
   </div>
 </div>
+<script>
+  // Corrige 100vh en móviles
+  document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
+  window.addEventListener('resize', () => {
+    document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
+  });
+</script>
+
 
 {% endblock %}
