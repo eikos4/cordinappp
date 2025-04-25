@@ -33,7 +33,9 @@ def init_routes(app):
             'images/FONDO5.png',
             'images/FONDO6.png',
             'images/FONDO7.png',
-            'images/fondo4.png'
+            'images/fondo8.png',
+            'images/fondo9.png',
+            'images/fondo10.png'
         ]
         fondo_aleatorio = random.choice(fondo_images)  # Selecciona uno al azar
 
