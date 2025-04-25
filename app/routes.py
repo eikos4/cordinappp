@@ -5,7 +5,7 @@ from app.models import Notification, ProjectLog, User, Project, ProjectUser, Tas
 from app import db
 from app.utils import crear_notificacion
 from app.utils import crear_notificacion
-
+import random
 
 
 import os
@@ -19,18 +19,33 @@ def init_routes(app):
     def index():
         return redirect(url_for('login'))
 
+    
+
     @app.route('/login', methods=['GET', 'POST'])
     def login():
         if current_user.is_authenticated:
             return redirect(url_for('dashboard'))
+        
         form = LoginForm()
+
+        # 🎨 Lista de fondos disponibles
+        fondo_images = [
+            'images/FONDO5.png',
+            'images/FONDO6.png',
+            'images/FONDO7.png',
+            'images/fondo4.png'
+        ]
+        fondo_aleatorio = random.choice(fondo_images)  # Selecciona uno al azar
+
         if form.validate_on_submit():
             user = User.query.filter_by(email=form.email.data).first()
             if user and user.check_password(form.password.data):
                 login_user(user)
                 return redirect(url_for('dashboard'))
             flash('Credenciales inválidas')
-        return render_template('login.html', form=form)
+
+        return render_template('login.html', form=form, fondo=fondo_aleatorio)
+
 
     @app.route('/register', methods=['GET', 'POST'])
     def register():
