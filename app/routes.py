@@ -31,11 +31,11 @@ def init_routes(app):
         # 🎨 Lista de fondos disponibles
         fondo_images = [
             'images/FONDO5.png',
-            'images/FONDO6.png',
             'images/FONDO7.png',
             'images/fondo8.png',
             'images/fondo9.png',
-            'images/fondo10.png'
+            'images/fondo10.png',
+            'images/fondooo.png'
         ]
         fondo_aleatorio = random.choice(fondo_images)  # Selecciona uno al azar
 
