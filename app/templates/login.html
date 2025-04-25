@@ -1,11 +1,11 @@
 {% extends 'base_simple.html' %}
 {% block content %}
 
-<div class="min-h-screen flex flex-col items-center justify-center bg-cover bg-center px-4"
+<div class="flex items-center justify-center min-h-screen bg-cover bg-center p-4" 
      style="background-image: url('{{ url_for('static', filename=fondo) }}'); background-size: cover; background-position: center;">
 
-  <div class="w-full max-w-sm bg-white bg-opacity-95 backdrop-blur-md border border-gray-200 rounded-xl shadow-xl p-6">
-    
+  <div class="w-full max-w-sm bg-white bg-opacity-95 backdrop-blur-md border border-gray-200 rounded-xl shadow-xl p-6 flex flex-col">
+
     <!-- Logo -->
     <div class="flex justify-center mb-4">
       <img src="{{ url_for('static', filename='images/bg-login.png') }}" alt="Logo" class="w-20 h-20 rounded-full shadow-md">
@@ -52,15 +52,17 @@
     <p class="text-xs text-center text-gray-400 mt-4">
       © 2025 Project Tracker ATENTUS — Todos los derechos reservados.
     </p>
+
   </div>
+
 </div>
+
 <script>
-  // Corrige 100vh en móviles
+  // Fix para altura real en móviles (Android WebView especialmente)
   document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
   window.addEventListener('resize', () => {
     document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
   });
 </script>
-
 
 {% endblock %}
