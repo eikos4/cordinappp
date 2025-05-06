@@ -3,8 +3,8 @@ from flask_login import login_user, logout_user, login_required, current_user
 from app.forms import AssignUserForm, LogHoursForm, LoginForm, RegistrationForm, ProjectForm, UpdateProgressForm, UpdateProjectStatusForm, TaskForm
 from app.models import Notification, ProjectLog, User, Project, ProjectUser, Task
 from app import db
-from app.utils import crear_notificacion
-from app.utils import crear_notificacion
+from app.utils import crear_notificacion, notificar_admins, notificar_lideres
+
 import random
 
 
@@ -154,7 +154,7 @@ def init_routes(app):
     @app.route('/log-hours', methods=['GET', 'POST'])
     @login_required
     def log_hours():
-        if current_user.role != 'participant':
+        if current_user.role != 'leader':
             flash("Solo los colaboradores pueden registrar horas.")
             return redirect(url_for('dashboard'))
 
@@ -168,15 +168,22 @@ def init_routes(app):
                 project_id=form.project_id.data
             ).first()
 
+            # Dentro de log_hours()
             if relation:
                 relation.hours_worked += form.hours.data
                 db.session.commit()
-                # Notificar a los líderes del proyecto
+
+                # Notificar a líderes del proyecto
                 leader_users = [pu.user for pu in relation.project.participants if pu.user.role == 'leader']
                 for leader in leader_users:
                     send_notification(leader.id, f"{current_user.name} registró {form.hours.data} horas en el proyecto '{relation.project.name}'")
 
+                # Notificar a administradores
+                from app.utils import notificar_admins
+                notificar_admins(f"{current_user.name} registró {form.hours.data} horas en el proyecto '{relation.project.name}'")
+
                 flash("Horas registradas correctamente.")
+
             else:
                 flash("No estás asignado a este proyecto.")
             return redirect(url_for('log_hours'))
@@ -457,20 +464,19 @@ def init_routes(app):
 
 
     # Crear nueva tarea
+    # Crear nueva tarea
     @app.route('/projects/<int:project_id>/tasks/create', methods=['GET', 'POST'])
     @login_required
-
     def create_task(project_id):
         project = Project.query.get_or_404(project_id)
 
-        # Si no es líder ni admin, redirige
+        # Si no es líder, admin ni participante, redirige
         if current_user.role not in ['leader', 'admin', 'participant']:
             flash("No tienes permiso para crear tareas en este proyecto.")
             return redirect(url_for('project_tasks', project_id=project.id))
 
         form = TaskForm()
 
-        # Si el campo existe, llena el dropdown con participantes
         if hasattr(form, 'assigned_to_id'):
             form.assigned_to_id.choices = [
                 (u.user.id, u.user.name) for u in project.participants
@@ -492,28 +498,25 @@ def init_routes(app):
             db.session.add(new_task)
             db.session.commit()
 
-            
-            # ✅ Notificar a los participantes
+            # Notificaciones a admins y líderes
+            notificar_admins(f"{current_user.name} creó una nueva tarea: '{new_task.name}' en el proyecto '{project.name}'.")
+            notificar_lideres(f"{current_user.name} creó la tarea '{new_task.name}' en el proyecto '{project.name}'.", project)
+
+            # Notificaciones a participantes (menos el creador)
             for pu in project.participants:
-                if pu.user_id != current_user.id:  # evitar notificar al mismo creador
+                if pu.user_id != current_user.id:
                     crear_notificacion(
                         pu.user_id,
                         f"{current_user.name} agregó una nueva tarea en el proyecto '{project.name}': '{new_task.name}'"
-            )
-
-
-
-
-
+                    )
 
             flash("Tarea creada con éxito.")
             return redirect(url_for('project_tasks', project_id=project.id))
 
-        # ✅ Esto garantiza que haya retorno si no entra en el if anterior
         return render_template('task_create.html', form=form, project=project)
-    
 
 
+    # Cambiar estado de la tarea
     @app.route('/tasks/<int:task_id>/update_status/<string:new_status>', methods=['POST'])
     @login_required
     def update_task_status(task_id, new_status):
@@ -524,10 +527,27 @@ def init_routes(app):
             return redirect(url_for('project_tasks', project_id=task.project_id))
 
         task.status = new_status
+        # Notificar líderes y admins
+        from app.utils import notificar_lideres, notificar_admins
+
+        notificar_lideres(
+            f"{current_user.name} cambió el estado de la tarea '{task.name}' a '{new_status}' en el proyecto '{task.project.name}'",
+            task.project
+        )
+        notificar_admins(
+            f"{current_user.name} cambió el estado de la tarea '{task.name}' a '{new_status}' en el proyecto '{task.project.name}'"
+        )
+
         db.session.commit()
+
+        # Notificación a administradores
+        notificar_admins(f"{current_user.name} cambió el estado de la tarea '{task.name}' a '{new_status}'.")
+
         flash(f"Tarea marcada como '{new_status}'")
         return redirect(url_for('project_tasks', project_id=task.project_id))
-    
+
+
+    # Editar tarea existente
     @app.route('/tasks/<int:task_id>/edit', methods=['GET', 'POST'])
     @login_required
     def edit_task(task_id):
@@ -551,7 +571,11 @@ def init_routes(app):
 
             db.session.commit()
 
-            # ✅ Notificación a los demás usuarios del proyecto
+            # Notificación a admin y líderes
+            notificar_admins(f"{current_user.name} editó la tarea '{task.name}' en el proyecto '{task.project.name}'.")
+            notificar_lideres(f"{current_user.name} actualizó la tarea '{task.name}' en el proyecto '{task.project.name}'.", task.project)
+
+            # Notificación a participantes (excepto el editor)
             for pu in task.project.participants:
                 if pu.user_id != current_user.id:
                     crear_notificacion(
@@ -563,9 +587,5 @@ def init_routes(app):
             return redirect(url_for('project_tasks', project_id=task.project_id))
 
         return render_template('task_edit.html', form=form, task=task)
-
-
-    
-
 
 

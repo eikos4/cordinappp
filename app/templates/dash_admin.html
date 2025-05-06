@@ -2,7 +2,7 @@
 {% block content %}
 <h2 class="text-2xl font-bold mb-4">Panel Administrador </h2>
 
-<h2 class="text-2xl font-bold mb-6 text-corporativo-morado">📋 Proyectos  Tracker</h2>
+<h2 class="text-2xl font-bold mb-6 text-corporativo-morado">📋 CORDINAPP</h2>
 {% set color_map = {
     'activo': 'bg-green-100 text-green-800 border-green-300',
     'suspendido': 'bg-red-100 text-red-800 border-red-300',
@@ -18,7 +18,7 @@
       <div>
         <h3 class="text-xl font-semibold text-corporativo-morado">{{ project.name }}</h3>
         <p class="text-xs text-gray-500">📅 {{ project.start_date }} → {{ project.end_date }}</p>
-        <p class="text-sm mt-1 text-gray-700">Progreso: {{ project.progress }}%</p>
+        <p class="text-sm mt-1 text-gray-700">Progreso Objetivos Semanales: {{ project.progress }}%</p>
         <div class="w-full bg-gray-200 h-2 rounded mt-1 mb-2">
           <div class="bg-corporativo-naranjo h-2 rounded" style="width: {{ project.progress }}%;"></div>
         </div>

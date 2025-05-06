@@ -1,8 +1,8 @@
-"""Agregar campo status a Task
+"""Add profile fields to User
 
-Revision ID: e3580edf8960
+Revision ID: 191278571259
 Revises: 
-Create Date: 2025-04-23 17:47:36.379959
+Create Date: 2025-05-05 18:33:30.364306
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'e3580edf8960'
+revision = '191278571259'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -76,8 +76,9 @@ def upgrade():
     sa.Column('description', sa.Text(), nullable=True),
     sa.Column('due_date', sa.Date(), nullable=True),
     sa.Column('estimated_hours', sa.Float(), nullable=True),
+    sa.Column('real_hours', sa.Float(), nullable=True),
     sa.Column('status', sa.String(length=20), nullable=True),
-    sa.Column('assigned_to_id', sa.Integer(), nullable=True),
+    sa.Column('assigned_to_id', sa.Integer(), nullable=False),
     sa.Column('created_by_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['assigned_to_id'], ['user.id'], ),
     sa.ForeignKeyConstraint(['created_by_id'], ['user.id'], ),

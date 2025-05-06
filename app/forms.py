@@ -18,7 +18,7 @@ class RegistrationForm(FlaskForm):
     submit = SubmitField('Registrar')
 
 class ProjectForm(FlaskForm):
-    name = StringField('Nombre del Proyecto', validators=[DataRequired()])
+    name = StringField('Nombre ', validators=[DataRequired()])
     description = TextAreaField('Descripción', validators=[DataRequired()])
     start_date = DateField('Fecha de Inicio', format='%Y-%m-%d', validators=[DataRequired()])
     end_date = DateField('Fecha de Fin', format='%Y-%m-%d', validators=[DataRequired()])
@@ -44,7 +44,7 @@ class LogHoursForm(FlaskForm):
 from wtforms import IntegerField
 
 class UpdateProgressForm(FlaskForm):
-    project_id = SelectField('Proyecto', coerce=int, validators=[DataRequired()])
+    project_id = SelectField('Proyecto o Profesional', coerce=int, validators=[DataRequired()])
     progress = IntegerField('Progreso (%)', validators=[DataRequired()])
     submit = SubmitField('Actualizar Progreso')
 
@@ -68,7 +68,7 @@ class UpdateProjectStatusForm(FlaskForm):
 from flask_wtf.file import FileField, FileAllowed
 
 class ProjectLogForm(FlaskForm):
-    project_id = SelectField('Proyecto', coerce=int, validators=[DataRequired()])
+    project_id = SelectField('Proyecto o Profesional', coerce=int, validators=[DataRequired()])
     tipo_evento = SelectField('Tipo de evento', choices=[
         ('comentario', 'Comentario'),
         ('archivo', 'Archivo'),

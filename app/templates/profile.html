@@ -21,7 +21,7 @@
     <!-- Lista de proyectos del usuario -->
     {% if projects %}
     <div class="mb-6">
-        <h3 class="text-lg font-semibold text-corporativo-azul mb-2">📁 Proyectos</h3>
+        <h3 class="text-lg font-semibold text-corporativo-azul mb-2">📁 Proyectos y Equipos</h3>
         <ul class="list-disc list-inside text-sm text-gray-700">
             {% for project in projects %}
             <li>{{ project.name }} <span class="text-gray-500">(Progreso: {{ project.progress }}%)</span></li>

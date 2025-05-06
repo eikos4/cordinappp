@@ -1,68 +1,69 @@
 {% extends 'base_simple.html' %}
 {% block content %}
 
-<div class="flex items-center justify-center min-h-screen bg-cover bg-center p-4" 
-     style="background-image: url('{{ url_for('static', filename=fondo) }}'); background-size: cover; background-position: center;">
+<!-- Animaciones -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet"/>
 
-  <div class="w-full max-w-sm bg-white bg-opacity-95 backdrop-blur-md border border-gray-200 rounded-xl shadow-xl p-6 flex flex-col">
+<div class="min-h-screen flex flex-col md:flex-row bg-corporativo-fondo animate__animated animate__fadeIn">
 
-    <!-- Logo -->
-    <div class="flex justify-center mb-4">
-      <img src="{{ url_for('static', filename='images/bg-login.png') }}" alt="Logo" class="w-20 h-20 rounded-full shadow-md">
-    </div>
-
-    <!-- Título -->
-    <h2 class="text-2xl font-bold text-center text-corporativo-morado mb-1 tracking-tight">PROJECT TRACKER</h2>
-    <p class="text-center text-sm text-gray-500 mb-4">Inicia sesión para continuar</p>
-
-    <!-- Flash -->
-    {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4 text-sm">
-          {% for message in messages %}
-            <p>{{ message }}</p>
-          {% endfor %}
-        </div>
-      {% endif %}
-    {% endwith %}
-
-    <!-- Formulario -->
-    <form method="POST" class="space-y-4">
-      {{ form.hidden_tag() }}
-
-      <!-- Email -->
-      <div>
-        <label class="block text-sm font-medium text-gray-700">{{ form.email.label }}</label>
-        {{ form.email(class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-corporativo-naranjo focus:outline-none text-corporativo-morado") }}
-      </div>
-
-      <!-- Contraseña -->
-      <div>
-        <label class="block text-sm font-medium text-gray-700">{{ form.password.label }}</label>
-        {{ form.password(class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-corporativo-naranjo focus:outline-none text-corporativo-morado") }}
-      </div>
-
-      <!-- Submit -->
-      <div>
-        {{ form.submit(class="w-full bg-corporativo-morado hover:bg-corporativo-naranjo transition text-white py-2 rounded-lg font-semibold shadow-sm") }}
-      </div>
-    </form>
-
-    <!-- Footer -->
-    <p class="text-xs text-center text-gray-400 mt-4">
-      © 2025 Project Tracker ATENTUS — Todos los derechos reservados.
-    </p>
-
+  <!-- Imagen a la izquierda -->
+  <div class="md:w-1/2 h-64 md:h-auto bg-cover bg-center animate__animated animate__fadeInLeft"
+       style="background-image: url('{{ url_for('static', filename='images/fonde.png') }}');">
   </div>
 
-</div>
+  <!-- Formulario a la derecha -->
+  <div class="flex items-center justify-center md:w-1/2 bg-white p-8 animate__animated animate__fadeInRight shadow-2xl">
+    <div class="w-full max-w-md space-y-6">
 
-<script>
-  // Fix para altura real en móviles (Android WebView especialmente)
-  document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
-  window.addEventListener('resize', () => {
-    document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
-  });
-</script>
+      <!-- Logo -->
+      <div class="flex justify-center mb-2 animate__animated animate__zoomIn">
+        <img src="{{ url_for('static', filename='images/bg-login.png') }}" alt="Logo" class="w-16 h-16 rounded-full shadow-lg">
+      </div>
+
+      <!-- Título -->
+      <h2 class="text-3xl font-bold text-center text-corporativo-morado tracking-wide animate__animated animate__fadeInDown">Bienvenido a CORDINAP</h2>
+      <p class="text-center text-sm text-corporativo-azul italic animate__animated animate__fadeIn">Gestión de equipos :: ATENTUS LATAM</p>
+
+      <!-- Flash -->
+      {% with messages = get_flashed_messages() %}
+        {% if messages %}
+          <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded text-sm animate__animated animate__shakeX">
+            {% for message in messages %}
+              <p>{{ message }}</p>
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
+
+      <!-- Formulario -->
+      <form method="POST" class="space-y-4 animate__animated animate__fadeInUp">
+        {{ form.hidden_tag() }}
+
+        <!-- Email -->
+        <div>
+          <label class="block text-sm font-medium text-corporativo-azul">{{ form.email.label }}</label>
+          {{ form.email(class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-4 focus:ring-corporativo-naranjo focus:outline-none text-corporativo-azul transition-all duration-300 hover:scale-[1.02]") }}
+        </div>
+
+        <!-- Contraseña -->
+        <div>
+          <label class="block text-sm font-medium text-corporativo-azul">{{ form.password.label }}</label>
+          {{ form.password(class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-4 focus:ring-corporativo-naranjo focus:outline-none text-corporativo-azul transition-all duration-300 hover:scale-[1.02]") }}
+        </div>
+
+        <!-- Submit -->
+        <div>
+          {{ form.submit(class="w-full bg-corporativo-morado hover:bg-corporativo-naranjo transition-all duration-500 ease-in-out text-white py-2 rounded-lg font-semibold shadow-lg hover:shadow-xl transform hover:scale-[1.03]") }}
+        </div>
+      </form>
+
+      <!-- Footer -->
+      <p class="text-xs text-center text-corporativo-azul mt-4 animate__animated animate__fadeIn">
+        © 2025 CORDINAP — Todos los derechos reservados.
+      </p>
+
+    </div>
+  </div>
+</div>
 
 {% endblock %}

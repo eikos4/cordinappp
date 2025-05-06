@@ -1,44 +1,51 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
-    <title>{% block title %}Project Tracker{% endblock %}</title>
-    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/icon3.png') }}">
+    <title>{% block title %}CORDINAP{% endblock %}</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/codi2.png') }}">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- Tailwind -->
+    <!-- TailwindCSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <!-- Tailwind Config -->
+    <!-- Tailwind Config personalizada -->
     <script>
         tailwind.config = {
+            darkMode: 'class', // Habilita clases para modo oscuro
             theme: {
                 extend: {
                     colors: {
                         corporativo: {
-                            fondo: '#f2f2f2',
-                            morado: '#5c02a2',
-                            azul: '#0b1738',
-                            naranjo: '#f1680d',
+                            fondo: '#f7f7fc',     // Blanco azulado
+                            morado: '#4b0082',    // Índigo elegante
+                            azul: '#002b36',      // Azul petróleo profundo
+                            naranjo: '#ff7849',   // Coral suave
                         }
                     }
                 }
             }
-        }
+        };
     </script>
 
-    <!-- Dark mode persistent -->
+    <!-- Modo oscuro persistente -->
     <script>
+        // Aplica modo oscuro si está activado en localStorage
         if (localStorage.getItem('dark-mode') === 'true') {
             document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
         }
     </script>
 
-    <!-- Custom CSS -->
+    <!-- Estilos personalizados -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
 </head>
 
-<body class="min-h-screen w-screen bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-100 overflow-x-hidden">
+<body class="min-h-screen bg-corporativo-fondo text-corporativo-azul dark:bg-gray-900 dark:text-white transition-colors duration-300 overflow-x-hidden">
+    
     {% block content %}{% endblock %}
+
 </body>
 </html>

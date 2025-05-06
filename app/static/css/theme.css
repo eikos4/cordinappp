@@ -1,0 +1,96 @@
+/* Cordinap - Colores Corporativos + Modo Oscuro */
+
+:root {
+    --color-fondo: #f0f4f8;        /* gris azulado claro */
+    --color-verde: #006d5b;        /* verde oscuro elegante */
+    --color-ocre: #b57200;         /* ocre profesional */
+    --color-celeste: #0077b6;      /* celeste intenso */
+    --color-blanco: #ffffff;
+}
+
+/* Estilos base modo claro */
+body {
+    background-color: var(--color-fondo);
+    color: var(--color-verde);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+header {
+    background-color: var(--color-verde);
+    color: white;
+}
+
+.card, .section {
+    background-color: var(--color-blanco);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+    margin-bottom: 1rem;
+}
+
+button, .btn {
+    background-color: var(--color-ocre);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+button:hover, .btn:hover {
+    background-color: var(--color-celeste);
+    transform: scale(1.02);
+}
+
+button:focus, .btn:focus {
+    outline: 2px solid var(--color-celeste);
+    outline-offset: 2px;
+}
+
+/* Utilidades de color */
+.bg-fondo { background-color: var(--color-fondo); }
+.bg-verde { background-color: var(--color-verde); color: white; }
+.bg-ocre { background-color: var(--color-ocre); color: white; }
+.bg-celeste { background-color: var(--color-celeste); color: white; }
+.text-verde { color: var(--color-verde); }
+.text-ocre { color: var(--color-ocre); }
+.text-celeste { color: var(--color-celeste); }
+
+/* 🌙 Modo oscuro */
+.dark body {
+    background-color: #1c1f26;
+    color: #f0f4f8;
+}
+
+.dark header {
+    background-color: #006d5b;
+    color: white;
+}
+
+.dark .card, .dark .section {
+    background-color: #2a2f3a;
+    color: #f0f4f8;
+    border: 1px solid #444;
+}
+
+.dark table {
+    background-color: #2a2f3a;
+}
+
+.dark table th {
+    background-color: #3b4151;
+    color: #f0f4f8;
+}
+
+.dark table td {
+    color: #ddd;
+}
+
+.dark .btn, .dark button {
+    background-color: #b57200;
+}
+
+.dark .btn:hover, .dark button:hover {
+    background-color: #0077b6;
+}
