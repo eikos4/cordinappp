@@ -14,10 +14,10 @@ app = create_app()
 app.app_context().push()  # Necesario para trabajar con la DB
 
 # Crear usuarios de prueba
-create_user("Carlos Espinoza", "admin@test.com", "admin", "admin123")
-create_user("Javier Chandia", "leader@test.com", "leader", "leader123")
-create_user("Juan Fideney", "leader2@test.com", "leader", "leader123")
-
+create_user("Carlos Espinoza", "cespinoza@atentus.com", "admin", "pass")
+create_user("Javier Chandia", "jchandia@atentus.com", "leader", "1q2w3e4r5t")
+#create_user("Fernando Lizana", "flizana@atentus.com", "leader", "leader123")
+#create_user("Lardin Armas ", "leader2@test.com", "leader", "leader123")
 
 
 

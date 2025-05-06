@@ -1,8 +1,8 @@
 """Add profile fields to User
 
-Revision ID: 191278571259
+Revision ID: 7ed74eb34e7c
 Revises: 
-Create Date: 2025-05-05 18:33:30.364306
+Create Date: 2025-05-06 01:53:48.999551
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '191278571259'
+revision = '7ed74eb34e7c'
 down_revision = None
 branch_labels = None
 depends_on = None
